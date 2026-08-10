@@ -1,8 +1,14 @@
 const albums = [
+
     {
         name: "Decay EP",
+
+        type: "EP",
+
         folder: "decay-ep",
+
         cover: "cover.png",
+
         tracks: [
             "01-issues.mp3",
             "02-how-i-see-you.mp3",
@@ -12,4 +18,5 @@ const albums = [
             "06-im-in-love.mp3"
         ]
     }
+
 ];
