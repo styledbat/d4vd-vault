@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+
+    <title>d4vd vault</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <nav class="sidebar">
+
+        <div class="brand">d4vd.vault</div>
+
+        <ul class="nav-links">
+            <li class="nav-item active" data-view="home">
+                <span class="nav-icon">⌂</span>
+                Home
+            </li>
+
+            <li class="nav-item" data-view="search">
+                <span class="nav-icon">⌕</span>
+                Search
+            </li>
+
+            <li class="nav-item" data-view="library">
+                <span class="nav-icon">▤</span>
+                Your Library
+            </li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <div class="library-title">Archives</div>
+
+        <ul class="nav-links archive-links" id="archiveLinks">
+            <!-- Albums generated from albums.json -->
+        </ul>
+
+        <div class="sidebar-footer">
+            <span>CLASSIFIED</span>
+            <span>VAULT ACCESS</span>
+        </div>
+
+    </nav>
+
+
+    <!-- =========================
+         MAIN VIEW
+    ========================== -->
+
+    <main class="main-view" id="mainView">
+
+        <!-- Top bar -->
+
+        <div class="top-bar">
+
+            <div class="navigation-buttons">
+                <button id="backButton" aria-label="Go back">‹</button>
+                <button id="forwardButton" aria-label="Go forward">›</button>
+            </div>
+
+            <div class="search-box" id="searchBox">
+                <span>⌕</span>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search the vault..."
+                    autocomplete="off"
+                >
+            </div>
+
+        </div>
+
+
+        <!-- Artist header -->
+
+        <header class="artist-header">
+
+            <div class="artist-image" id="artistImage"></div>
+
+            <div class="artist-info">
+
+                <span class="artist-tag">
+                    <span class="verified-mark">✓</span>
+                    Verified Artist
+                </span>
+
+                <h1 class="artist-name">d4vd</h1>
+
+                <span class="artist-stats">
+                    CLASSIFIED VAULT ACCESS
+                </span>
+
+                <span class="track-count" id="trackCount">
+                    Loading archive...
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- Main content -->
+
+        <section class="content-container">
+
+            <div class="action-bar">
+
+                <button
+                    class="play-btn-large"
+                    id="playAllButton"
+                    aria-label="Play all"
+                >
+                    ▶
+                </button>
+
+                <button
+                    class="shuffle-btn"
+                    id="shuffleButton"
+                    aria-label="Shuffle"
+                >
+                    ⇄
+                </button>
+
+            </div>
+
+
+            <!-- Home / album area -->
+
+            <section id="homeView">
+
+                <div class="section-heading">
+                    <div>
+                        <span class="section-kicker">ARCHIVE</span>
+                        <h2>Vault Library</h2>
+                    </div>
+
+                    <span class="result-count" id="resultCount"></span>
+                </div>
+
+                <div class="album-grid" id="albumGrid">
+                    <!-- Albums generated from albums.json -->
+                </div>
+
+            </section>
+
+
+            <!-- Album / track area -->
+
+            <section id="albumView" class="album-view hidden">
+
+                <button class="back-to-library" id="backToLibrary">
+                    ← Back to library
+                </button>
+
+                <div class="album-heading">
+
+                    <img
+                        class="album-cover-large"
+                        id="albumCover"
+                        src=""
+                        alt=""
+                    >
+
+                    <div class="album-details">
+
+                        <span class="section-kicker" id="albumType">
+                            ARCHIVE
+                        </span>
+
+                        <h2 id="albumTitle">Album</h2>
+
+                        <p id="albumMeta"></p>
+
+                    </div>
+
+                </div>
+
+
+                <table class="track-table">
+
+                    <thead>
+                        <tr>
+                            <th class="number-column">#</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th class="duration-column">⏱</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="trackTableBody">
+                        <!-- Tracks generated by JavaScript -->
+                    </tbody>
+
+                </table>
+
+            </section>
+
+
+            <!-- Search area -->
+
+            <section id="searchView" class="hidden">
+
+                <div class="section-heading">
+                    <div>
+                        <span class="section-kicker">SEARCH</span>
+                        <h2>Vault Search</h2>
+                    </div>
+                </div>
+
+                <div id="searchResults">
+                    <!-- Search results -->
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         BOTTOM PLAYER
+    ========================== -->
+
+    <div class="bottom-player">
+
+        <div class="now-playing">
+
+            <img
+                class="now-playing-art"
+                id="nowPlayingArt"
+                src=""
+                alt=""
+            >
+
+            <div class="now-playing-info">
+
+                <span
+                    class="np-title"
+                    id="nowPlayingTitle"
+                >
+                    Nothing playing
+                </span>
+
+                <span
+                    class="np-artist"
+                    id="nowPlayingArtist"
+                >
+                    d4vd
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="player-controls">
+
+            <div class="buttons">
+
+                <button
+                    class="control-button"
+                    id="previousButton"
+                    aria-label="Previous track"
+                >
+                    ⏮
+                </button>
+
+                <button
+                    class="play-pause"
+                    id="playPauseButton"
+                    aria-label="Play"
+                >
+                    ▶
+                </button>
+
+                <button
+                    class="control-button"
+                    id="nextButton"
+                    aria-label="Next track"
+                >
+                    ⏭
+                </button>
+
+            </div>
+
+            <div class="progress-container">
+
+                <span id="currentTime">0:00</span>
+
+                <input
+                    type="range"
+                    class="progress-bar"
+                    id="progressBar"
+                    min="0"
+                    max="100"
+                    value="0"
+                    step="0.1"
+                    aria-label="Track progress"
+                >
+
+                <span id="totalTime">0:00</span>
+
+            </div>
+
+        </div>
+
+
+        <div class="extra-controls">
+
+            <span class="volume-icon" id="volumeIcon">
+                🔊
+            </span>
+
+            <input
+                type="range"
+                class="volume-slider"
+                id="volumeSlider"
+                min="0"
+                max="1"
+                value="1"
+                step="0.01"
+                aria-label="Volume"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         AUDIO ENGINE
+    ========================== -->
+
+    <audio id="audioPlayer" preload="metadata"></audio>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script>
+
+        const state = {
+            albums: [],
+            tracks: [],
+            currentTrackIndex: -1,
+            currentAlbumId: null,
+            isPlaying: false,
+            shuffled: false,
+            history: [],
+            historyIndex: -1
+        };
+
+
+        const audio = document.getElementById("audioPlayer");
+
+        const albumGrid = document.getElementById("albumGrid");
+        const archiveLinks = document.getElementById("archiveLinks");
+        const trackTableBody = document.getElementById("trackTableBody");
+
+        const albumView = document.getElementById("albumView");
+        const homeView = document.getElementById("homeView");
+        const searchView = document.getElementById("searchView");
+
+        const albumTitle = document.getElementById("albumTitle");
+        const albumCover = document.getElementById("albumCover");
+        const albumType = document.getElementById("albumType");
+        const albumMeta = document.getElementById("albumMeta");
+
+        const playPauseButton = document.getElementById("playPauseButton");
+        const playAllButton = document.getElementById("playAllButton");
+        const previousButton = document.getElementById("previousButton");
+        const nextButton = document.getElementById("nextButton");
+
+        const progressBar = document.getElementById("progressBar");
+        const currentTime = document.getElementById("currentTime");
+        const totalTime = document.getElementById("totalTime");
+
+        const volumeSlider = document.getElementById("volumeSlider");
+        const volumeIcon = document.getElementById("volumeIcon");
+
+        const nowPlayingArt = document.getElementById("nowPlayingArt");
+        const nowPlayingTitle = document.getElementById("nowPlayingTitle");
+        const nowPlayingArtist = document.getElementById("nowPlayingArtist");
+
+        const searchInput = document.getElementById("searchInput");
+        const searchResults = document.getElementById("searchResults");
+
+        const trackCount = document.getElementById("trackCount");
+        const resultCount = document.getElementById("resultCount");
+
+
+        /* =========================
+           LOAD ARCHIVE
+        ========================== */
+
+        async function loadArchive() {
+
+            try {
+
+                const response = await fetch("albums.json");
+
+                if (!response.ok) {
+                    throw new Error("Could not load albums.json");
+                }
+
+                const data = await response.json();
+
+                state.albums = data.albums || [];
+
+                state.tracks = [];
+
+                state.albums.forEach(album => {
+
+                    album.tracks = album.tracks || [];
+
+                    album.tracks.forEach(track => {
+
+                        state.tracks.push({
+                            ...track,
+                            albumId: album.id,
+                            albumTitle: album.title,
+                            albumCover: album.cover,
+                            albumType: album.type || "Archive"
+                        });
+
+                    });
+
+                });
+
+                renderAlbums();
+                renderArchiveLinks();
+                updateTrackCount();
+
+            } catch (error) {
+
+                console.error(error);
+
+                albumGrid.innerHTML = `
+                    <div class="empty-state">
+                        <strong>VAULT ERROR</strong>
+                        <span>Unable to load albums.json</span>
+                    </div>
+                `;
+
+            }
+
+        }
+
+
+        /* =========================
+           ALBUMS
+        ========================== */
+
+        function renderAlbums() {
+
+            albumGrid.innerHTML = "";
+
+            if (!state.albums.length) {
+
+                albumGrid.innerHTML = `
+                    <div class="empty-state">
+                        <strong>VAULT EMPTY</strong>
+                        <span>No albums have been added yet.</span>
+                    </div>
+                `;
+
+                return;
+            }
+
+            state.albums.forEach(album => {
+
+                const card = document.createElement("button");
+
+                card.className = "album-card";
+
+                card.innerHTML = `
+                    <div class="album-card-image">
+                        <img
+                            src="${escapeAttribute(album.cover)}"
+                            alt="${escapeAttribute(album.title)} cover"
+                            loading="lazy"
+                        >
+                        <span class="album-card-play">▶</span>
+                    </div>
+
+                    <div class="album-card-title">
+                        ${escapeHTML(album.title)}
+                    </div>
+
+                    <div class="album-card-meta">
+                        ${escapeHTML(album.type || "Archive")}
+                        · ${album.tracks.length} track${album.tracks.length === 1 ? "" : "s"}
+                    </div>
+                `;
+
+                card.addEventListener("click", () => {
+                    openAlbum(album.id);
+                });
+
+                albumGrid.appendChild(card);
+
+            });
+
+            resultCount.textContent =
+                `${state.albums.length} archive${state.albums.length === 1 ? "" : "s"}`;
+
+        }
+
+
+        function renderArchiveLinks() {
+
+            archiveLinks.innerHTML = "";
+
+            state.albums.forEach(album => {
+
+                const li = document.createElement("li");
+
+                li.textContent = album.title;
+
+                li.addEventListener("click", () => {
+                    openAlbum(album.id);
+                });
+
+                archiveLinks.appendChild(li);
+
+            });
+
+        }
+
+
+        /* =========================
+           OPEN ALBUM
+        ========================== */
+
+        function openAlbum(albumId) {
+
+            const album = state.albums.find(item => item.id === albumId);
+
+            if (!album) return;
+
+            state.currentAlbumId = albumId;
+
+            albumTitle.textContent = album.title;
+            albumType.textContent = album.type || "ARCHIVE";
+
+            albumCover.src = album.cover;
+            albumCover.alt = `${album.title} cover`;
+
+            const trackLabel =
+                `${album.tracks.length} track${album.tracks.length === 1 ? "" : "s"}`;
+
+            albumMeta.textContent =
+                `d4vd · ${trackLabel}`;
+
+            renderAlbumTracks(album);
+
+            homeView.classList.add("hidden");
+            searchView.classList.add("hidden");
+            albumView.classList.remove("hidden");
+
+            document.querySelectorAll(".nav-item")
+                .forEach(item => item.classList.remove("active"));
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+
+        function renderAlbumTracks(album) {
+
+            trackTableBody.innerHTML = "";
+
+            album.tracks.forEach((track, index) => {
+
+                const globalIndex = state.tracks.findIndex(item =>
+                    item.albumId === album.id &&
+                    item.file === track.file
+                );
+
+                const row = document.createElement("tr");
+
+                row.className = "track-row";
+
+                row.innerHTML = `
+                    <td class="track-num">
+                        <span class="track-number">
+                            ${String(index + 1).padStart(2, "0")}
+                        </span>
+
+                        <span class="row-play">
+                            ▶
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="track-title">
+                            ${escapeHTML(track.title)}
+                        </div>
+
+                        <div class="track-file">
+                            ${escapeHTML(track.file)}
+                        </div>
+                    </td>
+
+                    <td class="track-status">
+                        ${escapeHTML(track.status || album.type || "Archive")}
+                    </td>
+
+                    <td class="track-time">
+                        ${track.duration || "—"}
+                    </td>
+                `;
+
+                row.addEventListener("click", () => {
+
+                    if (globalIndex !== -1) {
+                        playTrack(globalIndex);
+                    }
+
+                });
+
+                trackTableBody.appendChild(row);
+
+            });
+
+        }
+
+
+        /* =========================
+           PLAY TRACK
+        ========================== */
+
+        function playTrack(index) {
+
+            if (index < 0 || index >= state.tracks.length) return;
+
+            const track = state.tracks[index];
+
+            state.currentTrackIndex = index;
+
+            audio.src = track.file;
+
+            nowPlayingTitle.textContent = track.title;
+            nowPlayingArtist.textContent =
+                `d4vd · ${track.albumTitle}`;
+
+            nowPlayingArt.src = track.albumCover;
+            nowPlayingArt.alt = `${track.albumTitle} cover`;
+
+            progressBar.value = 0;
+            currentTime.textContent = "0:00";
+            totalTime.textContent = track.duration || "0:00";
+
+            audio.play()
+                .then(() => {
+                    state.isPlaying = true;
+                    updatePlayButton();
+                })
+                .catch(error => {
+                    console.warn("Playback could not start:", error);
+                    state.isPlaying = false;
+                    updatePlayButton();
+                });
+
+            highlightCurrentTrack();
+
+        }
+
+
+        /* =========================
+           PLAY / PAUSE
+        ========================== */
+
+        function togglePlayPause() {
+
+            if (state.currentTrackIndex === -1) {
+
+                if (state.tracks.length) {
+                    playTrack(0);
+                }
+
+                return;
+            }
+
+            if (audio.paused) {
+
+                audio.play()
+                    .then(() => {
+                        state.isPlaying = true;
+                        updatePlayButton();
+                    })
+                    .catch(() => {});
+
+            } else {
+
+                audio.pause();
+
+                state.isPlaying = false;
+
+                updatePlayButton();
+
+            }
+
+        }
+
+
+        function updatePlayButton() {
+
+            playPauseButton.textContent =
+                state.isPlaying ? "❚❚" : "▶";
+
+            playPauseButton.setAttribute(
+                "aria-label",
+                state.isPlaying ? "Pause" : "Play"
+            );
+
+            if (state.isPlaying) {
+                playAllButton.textContent = "❚❚";
+            } else {
+                playAllButton.textContent = "▶";
+            }
+
+        }
+
+
+        /* =========================
+           NEXT / PREVIOUS
+        ========================== */
+
+        function nextTrack() {
+
+            if (!state.tracks.length) return;
+
+            let nextIndex;
+
+            if (state.shuffled) {
+
+                nextIndex =
+                    Math.floor(Math.random() * state.tracks.length);
+
+                if (state.tracks.length > 1) {
+
+                    while (nextIndex === state.currentTrackIndex) {
+
+                        nextIndex =
+                            Math.floor(
+                                Math.random() * state.tracks.length
+                            );
+
+                    }
+
+                }
+
+            } else {
+
+                nextIndex =
+                    state.currentTrackIndex + 1;
+
+                if (nextIndex >= state.tracks.length) {
+                    nextIndex = 0;
+                }
+
+            }
+
+            playTrack(nextIndex);
+
+        }
+
+
+        function previousTrack() {
+
+            if (!state.tracks.length) return;
+
+            if (audio.currentTime > 3) {
+
+                audio.currentTime = 0;
+
+                return;
+
+            }
+
+            let previousIndex =
+                state.currentTrackIndex - 1;
+
+            if (previousIndex < 0) {
+                previousIndex = state.tracks.length - 1;
+            }
+
+            playTrack(previousIndex);
+
+        }
+
+
+        /* =========================
+           PROGRESS
+        ========================== */
+
+        audio.addEventListener("loadedmetadata", () => {
+
+            if (Number.isFinite(audio.duration)) {
+
+                totalTime.textContent =
+                    formatTime(audio.duration);
+
+            }
+
+        });
+
+
+        audio.addEventListener("timeupdate", () => {
+
+            if (!audio.duration) return;
+
+            const percentage =
+                (audio.currentTime / audio.duration) * 100;
+
+            progressBar.value = percentage;
+
+            currentTime.textContent =
+                formatTime(audio.currentTime);
+
+        });
+
+
+        progressBar.addEventListener("input", () => {
+
+            if (!audio.duration) return;
+
+            audio.currentTime =
+                (progressBar.value / 100) * audio.duration;
+
+        });
+
+
+        audio.addEventListener("play", () => {
+
+            state.isPlaying = true;
+
+            updatePlayButton();
+
+        });
+
+
+        audio.addEventListener("pause", () => {
+
+            state.isPlaying = false;
+
+            updatePlayButton();
+
+        });
+
+
+        audio.addEventListener("ended", () => {
+
+            nextTrack();
+
+        });
+
+
+        /* =========================
+           VOLUME
+        ========================== */
+
+        volumeSlider.addEventListener("input", () => {
+
+            audio.volume = volumeSlider.value;
+
+            updateVolumeIcon();
+
+        });
+
+
+        function updateVolumeIcon() {
+
+            const volume = Number(volumeSlider.value);
+
+            if (volume === 0) {
+                volumeIcon.textContent = "🔇";
+            } else if (volume < 0.5) {
+                volumeIcon.textContent = "🔉";
+            } else {
+                volumeIcon.textContent = "🔊";
+            }
+
+        }
+
+
+        volumeIcon.addEventListener("click", () => {
+
+            if (audio.volume > 0) {
+
+                audio.dataset.previousVolume = audio.volume;
+
+                audio.volume = 0;
+                volumeSlider.value = 0;
+
+            } else {
+
+                const previous =
+                    Number(audio.dataset.previousVolume) || 1;
+
+                audio.volume = previous;
+                volumeSlider.value = previous;
+
+            }
+
+            updateVolumeIcon();
+
+        });
+
+
+        /* =========================
+           PLAY ALL
+        ========================== */
+
+        playAllButton.addEventListener("click", () => {
+
+            if (state.isPlaying) {
+
+                audio.pause();
+
+                return;
+
+            }
+
+            if (state.currentTrackIndex === -1) {
+
+                playTrack(0);
+
+            } else {
+
+                audio.play();
+
+            }
+
+        });
+
+
+        /* =========================
+           SHUFFLE
+        ========================== */
+
+        shuffleButton.addEventListener("click", () => {
+
+            state.shuffled = !state.shuffled;
+
+            shuffleButton.classList.toggle(
+                "active",
+                state.shuffled
+            );
+
+        });
+
+
+        /* =========================
+           SEARCH
+        ========================== */
+
+        searchInput.addEventListener("input", () => {
+
+            const query =
+                searchInput.value.trim().toLowerCase();
+
+            if (!query) {
+
+                if (!searchView.classList.contains("hidden")) {
+                    renderSearchResults("");
+                }
+
+                return;
+
+            }
+
+            showSearchView();
+
+            renderSearchResults(query);
+
+        });
+
+
+        function renderSearchResults(query) {
+
+            searchResults.innerHTML = "";
+
+            const results = state.tracks.filter(track => {
+
+                const searchable =
+                    `${track.title}
+                     ${track.albumTitle}
+                     ${track.status || ""}
+                     ${track.file}`.toLowerCase();
+
+                return searchable.includes(query);
+
+            });
+
+            if (!results.length) {
+
+                searchResults.innerHTML = `
+                    <div class="empty-state">
+                        <strong>NO RESULTS</strong>
+                        <span>
+                            Nothing matching "${escapeHTML(query)}"
+                        </span>
+                    </div>
+                `;
+
+                return;
+
+            }
+
+            results.forEach(track => {
+
+                const index =
+                    state.tracks.indexOf(track);
+
+                const result = document.createElement("button");
+
+                result.className = "search-result";
+
+                result.innerHTML = `
+                    <img
+                        src="${escapeAttribute(track.albumCover)}"
+                        alt=""
+                        loading="lazy"
+                    >
+
+                    <div class="search-result-info">
+                        <strong>
+                            ${escapeHTML(track.title)}
+                        </strong>
+
+                        <span>
+                            ${escapeHTML(track.albumTitle)}
+                            ·
+                            ${escapeHTML(track.status || "Archive")}
+                        </span>
+                    </div>
+
+                    <span class="search-result-play">
+                        ▶
+                    </span>
+                `;
+
+                result.addEventListener("click", () => {
+                    playTrack(index);
+                });
+
+                searchResults.appendChild(result);
+
+            });
+
+        }
+
+
+        function showSearchView() {
+
+            homeView.classList.add("hidden");
+            albumView.classList.add("hidden");
+            searchView.classList.remove("hidden");
+
+            document.querySelectorAll(".nav-item")
+                .forEach(item => item.classList.remove("active"));
+
+        }
+
+
+        /* =========================
+           NAVIGATION
+        ========================== */
+
+        document.querySelectorAll(".nav-item")
+            .forEach(item => {
+
+                item.addEventListener("click", () => {
+
+                    const view = item.dataset.view;
+
+                    document.querySelectorAll(".nav-item")
+                        .forEach(nav =>
+                            nav.classList.remove("active")
+                        );
+
+                    item.classList.add("active");
+
+                    if (view === "home") {
+
+                        homeView.classList.remove("hidden");
+                        albumView.classList.add("hidden");
+                        searchView.classList.add("hidden");
+
+                    }
+
+                    if (view === "search") {
+
+                        showSearchView();
+
+                        searchInput.focus();
+
+                    }
+
+                    if (view === "library") {
+
+                        homeView.classList.remove("hidden");
+                        albumView.classList.add("hidden");
+                        searchView.classList.add("hidden");
+
+                    }
+
+                });
+
+            });
+
+
+        document
+            .getElementById("backToLibrary")
+            .addEventListener("click", () => {
+
+                albumView.classList.add("hidden");
+                homeView.classList.remove("hidden");
+
+            });
+
+
+        previousButton.addEventListener(
+            "click",
+            previousTrack
+        );
+
+        nextButton.addEventListener(
+            "click",
+            nextTrack
+        );
+
+        playPauseButton.addEventListener(
+            "click",
+            togglePlayPause
+        );
+
+
+        /* =========================
+           KEYBOARD
+        ========================== */
+
+        document.addEventListener("keydown", event => {
+
+            const activeElement =
+                document.activeElement;
+
+            const typing =
+                activeElement &&
+                (
+                    activeElement.tagName === "INPUT" ||
+                    activeElement.tagName === "TEXTAREA"
+                );
+
+            if (event.code === "Space" && !typing) {
+
+                event.preventDefault();
+
+                togglePlayPause();
+
+            }
+
+            if (event.code === "ArrowRight" && !typing) {
+
+                nextTrack();
+
+            }
+
+            if (event.code === "ArrowLeft" && !typing) {
+
+                previousTrack();
+
+            }
+
+        });
+
+
+        /* =========================
+           TRACK HIGHLIGHT
+        ========================== */
+
+        function highlightCurrentTrack() {
+
+            document
+                .querySelectorAll(".track-row")
+                .forEach(row =>
+                    row.classList.remove("playing")
+                );
+
+            const track = state.tracks[state.currentTrackIndex];
+
+            if (!track) return;
+
+            if (track.albumId !== state.currentAlbumId) return;
+
+            const album = state.albums.find(
+                item => item.id === track.albumId
+            );
+
+            if (!album) return;
+
+            const trackIndex =
+                album.tracks.findIndex(
+                    item => item.file === track.file
+                );
+
+            const rows =
+                document.querySelectorAll(".track-row");
+
+            if (rows[trackIndex]) {
+                rows[trackIndex].classList.add("playing");
+            }
+
+        }
+
+
+        /* =========================
+           HELPERS
+        ========================== */
+
+        function updateTrackCount() {
+
+            const total = state.tracks.length;
+
+            trackCount.textContent =
+                `${total.toLocaleString()} track${total === 1 ? "" : "s"} archived`;
+
+        }
+
+
+        function formatTime(seconds) {
+
+            if (!Number.isFinite(seconds)) {
+                return "0:00";
+            }
+
+            const minutes =
+                Math.floor(seconds / 60);
+
+            const remaining =
+                Math.floor(seconds % 60)
+                    .toString()
+                    .padStart(2, "0");
+
+            return `${minutes}:${remaining}`;
+
+        }
+
+
+        function escapeHTML(value) {
+
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        function escapeAttribute(value) {
+
+            return escapeHTML(value);
+
+        }
+
+
+        /* =========================
+           INITIALIZE
+        ========================== */
+
+        audio.volume = 1;
+
+        updateVolumeIcon();
+
+        loadArchive();
+
+    </script>
+
+</body>
+</html>
