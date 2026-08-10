@@ -20,7 +20,7 @@ const albums = [
     {
         id: "decay-ep",
 
-        name: "Decay EP",
+        name: "Decay",
 
         type: "EP",
 
