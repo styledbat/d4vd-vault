@@ -1,256 +1,687 @@
-const audio = document.getElementById("audio");
-
-const trackList = document.getElementById("track-list");
-const emptyState = document.getElementById("empty-state");
-
-const albumTitle = document.getElementById("album-title");
-const albumCover = document.getElementById("album-cover");
-const albumMeta = document.getElementById("album-meta");
-const trackCount = document.getElementById("track-count");
-
-const playerCover = document.getElementById("player-cover");
-const nowTitle = document.getElementById("now-title");
-const nowArtist = document.getElementById("now-artist");
-
-const playButton = document.getElementById("play-button");
-const previousButton = document.getElementById("previous-button");
-const nextButton = document.getElementById("next-button");
-
-const playAlbumButton = document.getElementById("play-album");
-const shuffleButton = document.getElementById("shuffle-button");
-
-const progress = document.getElementById("progress");
-const volume = document.getElementById("volume");
-
-const currentTime = document.getElementById("current-time");
-const totalTime = document.getElementById("total-time");
-
-const searchArea = document.getElementById("search-area");
-const searchInput = document.getElementById("search-input");
-const clearSearch = document.getElementById("clear-search");
-
-const libraryButton = document.getElementById("library-button");
-const searchButton = document.getElementById("search-button");
-const homeButton = document.getElementById("home-button");
+/* =========================================================
+   d4vd.vault
+   Main application
+========================================================= */
 
 
-let currentTrack = -1;
-let filteredTracks = [];
+/* =========================
+   ELEMENTS
+========================= */
+
+const audio =
+    document.getElementById("audio");
+
+
+/* Navigation */
+
+const brandButton =
+    document.getElementById("brand-button");
+
+const libraryButton =
+    document.getElementById("library-button");
+
+const searchButton =
+    document.getElementById("search-button");
+
+
+/* Views */
+
+const libraryView =
+    document.getElementById("library-view");
+
+const albumView =
+    document.getElementById("album-view");
+
+const searchView =
+    document.getElementById("search-view");
+
+
+/* Library */
+
+const albumGrid =
+    document.getElementById("album-grid");
+
+const libraryTotal =
+    document.getElementById("library-total");
+
+const libraryEmpty =
+    document.getElementById("library-empty");
+
+
+/* Album */
+
+const backToLibrary =
+    document.getElementById("back-to-library");
+
+const albumCover =
+    document.getElementById("album-cover");
+
+const albumTitle =
+    document.getElementById("album-title");
+
+const albumType =
+    document.getElementById("album-type");
+
+const albumMeta =
+    document.getElementById("album-meta");
+
+const tracklistTitle =
+    document.getElementById("tracklist-title");
+
+const trackCount =
+    document.getElementById("track-count");
+
+const trackList =
+    document.getElementById("track-list");
+
+const albumEmpty =
+    document.getElementById("album-empty");
+
+
+/* Album actions */
+
+const playAlbumButton =
+    document.getElementById("play-album");
+
+const shuffleButton =
+    document.getElementById("shuffle-button");
+
+const downloadAlbumButton =
+    document.getElementById("download-album");
+
+
+/* Search */
+
+const searchInput =
+    document.getElementById("search-input");
+
+const clearSearch =
+    document.getElementById("clear-search");
+
+const searchResults =
+    document.getElementById("search-results");
+
+const searchEmpty =
+    document.getElementById("search-empty");
+
+
+/* Player */
+
+const playerCover =
+    document.getElementById("player-cover");
+
+const nowTitle =
+    document.getElementById("now-title");
+
+const nowArtist =
+    document.getElementById("now-artist");
+
+const playButton =
+    document.getElementById("play-button");
+
+const previousButton =
+    document.getElementById("previous-button");
+
+const nextButton =
+    document.getElementById("next-button");
+
+const currentTime =
+    document.getElementById("current-time");
+
+const totalTime =
+    document.getElementById("total-time");
+
+const progress =
+    document.getElementById("progress");
+
+const volume =
+    document.getElementById("volume");
+
+
+/* =========================
+   STATE
+========================= */
+
+let currentAlbumIndex = 0;
+
+let currentTrackIndex = -1;
+
+let currentPlaylist = [];
+
 let durationCache = new Map();
 
 
-function getAlbum() {
-    return albums[0];
+/* =========================
+   HELPERS
+========================= */
+
+function getAlbum(index = currentAlbumIndex) {
+
+    return albums[index];
+
+}
+
+
+function getAlbumCover(album) {
+
+    return `albums/${album.folder}/${album.cover}`;
+
+}
+
+
+function getTrackPath(album, filename) {
+
+    return `albums/${album.folder}/${filename}`;
+
 }
 
 
 function getTrackName(filename) {
+
     return filename
+
         .replace(/\.[^/.]+$/, "")
+
         .replace(/^\d+-/, "")
+
         .replace(/-/g, " ")
-        .replace(/\b\w/g, char => char.toUpperCase());
-}
 
+        .replace(/\b\w/g, character =>
+            character.toUpperCase()
+        );
 
-function getTrackPath(filename) {
-    const album = getAlbum();
-
-    return `albums/${album.folder}/${filename}`;
-}
-
-
-function getCoverPath() {
-    const album = getAlbum();
-
-    return `albums/${album.folder}/${album.cover}`;
 }
 
 
 function formatTime(seconds) {
 
     if (!Number.isFinite(seconds)) {
+
         return "0:00";
+
     }
+
 
     const minutes =
         Math.floor(seconds / 60);
 
-    const secondsPart =
+
+    const remainingSeconds =
         Math.floor(seconds % 60)
             .toString()
             .padStart(2, "0");
 
-    return `${minutes}:${secondsPart}`;
+
+    return `${minutes}:${remainingSeconds}`;
+
 }
 
 
+function escapeHtml(value) {
+
+    return value
+
+        .replaceAll("&", "&amp;")
+
+        .replaceAll("<", "&lt;")
+
+        .replaceAll(">", "&gt;")
+
+        .replaceAll('"', "&quot;")
+
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* =========================
+   VIEW MANAGEMENT
+========================= */
+
+function showView(viewName) {
+
+    libraryView.classList.remove(
+        "active-view"
+    );
+
+    albumView.classList.remove(
+        "active-view"
+    );
+
+    searchView.classList.remove(
+        "active-view"
+    );
+
+
+    libraryButton.classList.remove(
+        "active"
+    );
+
+    searchButton.classList.remove(
+        "active"
+    );
+
+
+    if (viewName === "library") {
+
+        libraryView.classList.add(
+            "active-view"
+        );
+
+        libraryButton.classList.add(
+            "active"
+        );
+
+        document.title =
+            "d4vd.vault — Library";
+
+    }
+
+
+    if (viewName === "album") {
+
+        albumView.classList.add(
+            "active-view"
+        );
+
+        libraryButton.classList.remove(
+            "active"
+        );
+
+        document.title =
+            `${getAlbum().name} — d4vd.vault`;
+
+    }
+
+
+    if (viewName === "search") {
+
+        searchView.classList.add(
+            "active-view"
+        );
+
+        searchButton.classList.add(
+            "active"
+        );
+
+        document.title =
+            "Search — d4vd.vault";
+
+    }
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "instant"
+    });
+
+}
+
+
+/* =========================
+   LIBRARY
+========================= */
+
+function renderLibrary() {
+
+    albumGrid.innerHTML = "";
+
+
+    libraryTotal.textContent =
+        `${albums.length
+            .toString()
+            .padStart(2, "0")} RELEASES`;
+
+
+    if (!albums.length) {
+
+        libraryEmpty.classList.add(
+            "visible"
+        );
+
+        return;
+
+    }
+
+
+    libraryEmpty.classList.remove(
+        "visible"
+    );
+
+
+    albums.forEach(
+        (album, index) => {
+
+            const card =
+                document.createElement("button");
+
+
+            card.type =
+                "button";
+
+
+            card.className =
+                "album-card";
+
+
+            const cover =
+                getAlbumCover(album);
+
+
+            card.innerHTML = `
+
+                <div class="album-card-cover">
+
+                    <img
+                        src="${cover}"
+                        alt="${escapeHtml(album.name)} artwork"
+                        loading="lazy"
+                    >
+
+                </div>
+
+                <div class="album-card-title">
+                    ${escapeHtml(album.name)}
+                </div>
+
+                <div class="album-card-meta">
+                    ${escapeHtml(album.type || "Release")}
+                    ·
+                    ${album.tracks.length} tracks
+                </div>
+
+            `;
+
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    openAlbum(index);
+
+                }
+            );
+
+
+            albumGrid.appendChild(card);
+
+        }
+    );
+
+}
+
+
+/* =========================
+   OPEN ALBUM
+========================= */
+
+function openAlbum(index) {
+
+    if (!albums[index]) {
+
+        return;
+
+    }
+
+
+    currentAlbumIndex =
+        index;
+
+
+    currentTrackIndex =
+        -1;
+
+
+    currentPlaylist =
+        [...albums[index].tracks];
+
+
+    renderAlbum();
+
+
+    showView("album");
+
+}
+
+
+/* =========================
+   ALBUM
+========================= */
+
 function renderAlbum() {
 
-    const album = getAlbum();
+    const album =
+        getAlbum();
 
-    albumTitle.textContent = album.name;
+
+    const cover =
+        getAlbumCover(album);
+
 
     albumCover.src =
-        getCoverPath();
+        cover;
 
-    playerCover.src =
-        getCoverPath();
+
+    albumCover.alt =
+        `${album.name} artwork`;
+
+
+    albumTitle.textContent =
+        album.name;
+
+
+    albumType.textContent =
+        `${album.type || "RELEASE"} / ARCHIVE`;
+
 
     albumMeta.textContent =
         `${album.tracks.length} TRACKS · ARCHIVE`;
+
+
+    tracklistTitle.textContent =
+        album.name;
+
 
     trackCount.textContent =
         album.tracks.length
             .toString()
             .padStart(2, "0");
 
+
+    playerCover.src =
+        cover;
+
+
     renderTracks();
+
 }
 
 
+/* =========================
+   TRACK LIST
+========================= */
+
 function renderTracks() {
 
-    const album = getAlbum();
-
-    const query =
-        searchInput.value
-            .trim()
-            .toLowerCase();
-
-
-    filteredTracks =
-        album.tracks
-            .map((filename, index) => ({
-                filename,
-                index,
-                title: getTrackName(filename)
-            }))
-            .filter(track => {
-
-                if (!query) {
-                    return true;
-                }
-
-                return (
-                    track.title
-                        .toLowerCase()
-                        .includes(query) ||
-
-                    track.filename
-                        .toLowerCase()
-                        .includes(query)
-                );
-            });
+    const album =
+        getAlbum();
 
 
     trackList.innerHTML = "";
 
 
-    emptyState.classList.toggle(
-        "visible",
-        filteredTracks.length === 0
+    if (!album.tracks.length) {
+
+        albumEmpty.classList.add(
+            "visible"
+        );
+
+        return;
+
+    }
+
+
+    albumEmpty.classList.remove(
+        "visible"
     );
 
 
-    filteredTracks.forEach(track => {
+    album.tracks.forEach(
+        (filename, index) => {
 
-        const button =
-            document.createElement("button");
-
-        button.type = "button";
-
-        button.className = "track";
+            const button =
+                document.createElement("button");
 
 
-        if (track.index === currentTrack) {
-            button.classList.add("active");
-        }
+            button.type =
+                "button";
 
 
-        const duration =
-            durationCache.get(
-                getTrackPath(track.filename)
+            button.className =
+                "track";
+
+
+            if (
+                index ===
+                currentTrackIndex
+            ) {
+
+                button.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            const path =
+                getTrackPath(
+                    album,
+                    filename
+                );
+
+
+            const cachedDuration =
+                durationCache.get(path);
+
+
+            button.innerHTML = `
+
+                <span class="track-number">
+                    ${String(index + 1).padStart(2, "0")}
+                </span>
+
+                <span class="track-name">
+                    ${escapeHtml(
+                        getTrackName(filename)
+                    )}
+                </span>
+
+                <span class="track-duration">
+                    ${
+                        cachedDuration
+                            ? formatTime(cachedDuration)
+                            : "—"
+                    }
+                </span>
+
+            `;
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    loadTrack(index);
+
+                    playTrack();
+
+                }
             );
 
 
-        button.innerHTML = `
-            <span class="track-number">
-                ${String(track.index + 1).padStart(2, "0")}
-            </span>
-
-            <span class="track-name">
-                ${escapeHtml(track.title)}
-            </span>
-
-            <span class="track-duration">
-                ${duration ? formatTime(duration) : "—"}
-            </span>
-        `;
+            trackList.appendChild(
+                button
+            );
 
 
-        button.addEventListener(
-            "click",
-            () => {
+            loadDuration(
+                album,
+                filename
+            );
 
-                loadTrack(track.index);
-
-                playTrack();
-            }
-        );
-
-
-        trackList.appendChild(button);
-
-
-        loadDuration(
-            track.filename
-        );
-
-    });
+        }
+    );
 
 }
 
 
-function loadDuration(filename) {
+/* =========================
+   AUDIO DURATION
+========================= */
+
+function loadDuration(
+    album,
+    filename
+) {
 
     const path =
-        getTrackPath(filename);
+        getTrackPath(
+            album,
+            filename
+        );
 
 
-    if (durationCache.has(path)) {
+    if (
+        durationCache.has(path)
+    ) {
+
         return;
+
     }
 
 
-    const tempAudio =
+    const temporaryAudio =
         new Audio();
 
 
-    tempAudio.preload =
+    temporaryAudio.preload =
         "metadata";
 
 
-    tempAudio.src =
+    temporaryAudio.src =
         path;
 
 
-    tempAudio.addEventListener(
+    temporaryAudio.addEventListener(
         "loadedmetadata",
         () => {
 
             durationCache.set(
                 path,
-                tempAudio.duration
+                temporaryAudio.duration
             );
 
-            renderTracks();
+
+            if (
+                getAlbum() === album
+            ) {
+
+                renderTracks();
+
+            }
+
         },
-        { once: true }
+        {
+            once: true
+        }
     );
 
 }
 
+
+/* =========================
+   LOAD TRACK
+========================= */
 
 function loadTrack(index) {
 
@@ -263,27 +694,32 @@ function loadTrack(index) {
 
 
     if (!filename) {
+
         return;
+
     }
 
 
-    currentTrack =
+    currentTrackIndex =
         index;
 
 
+    currentPlaylist =
+        [...album.tracks];
+
+
     audio.src =
-        getTrackPath(filename);
+        getTrackPath(
+            album,
+            filename
+        );
 
 
     audio.load();
 
 
-    const title =
-        getTrackName(filename);
-
-
     nowTitle.textContent =
-        title;
+        getTrackName(filename);
 
 
     nowArtist.textContent =
@@ -291,31 +727,42 @@ function loadTrack(index) {
 
 
     playerCover.src =
-        getCoverPath();
+        getAlbumCover(album);
 
 
     renderTracks();
 
+
+    updateProgress();
+
 }
 
+
+/* =========================
+   PLAYBACK
+========================= */
 
 function playTrack() {
 
     if (!audio.src) {
+
         loadTrack(
-            currentTrack >= 0
-                ? currentTrack
+            currentTrackIndex >= 0
+                ? currentTrackIndex
                 : 0
         );
+
     }
 
 
     audio.play()
         .catch(error => {
+
             console.error(
                 "Playback error:",
                 error
             );
+
         });
 
 }
@@ -337,17 +784,26 @@ function togglePlay() {
         playTrack();
 
         return;
+
     }
 
 
     if (audio.paused) {
+
         playTrack();
+
     } else {
+
         pauseTrack();
+
     }
 
 }
 
+
+/* =========================
+   PREVIOUS
+========================= */
 
 function previousTrack() {
 
@@ -355,7 +811,18 @@ function previousTrack() {
         getAlbum();
 
 
-    if (currentTrack <= 0) {
+    if (
+        !album.tracks.length
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        currentTrackIndex <= 0
+    ) {
 
         loadTrack(
             album.tracks.length - 1
@@ -364,7 +831,7 @@ function previousTrack() {
     } else {
 
         loadTrack(
-            currentTrack - 1
+            currentTrackIndex - 1
         );
 
     }
@@ -375,6 +842,10 @@ function previousTrack() {
 }
 
 
+/* =========================
+   NEXT
+========================= */
+
 function nextTrack() {
 
     const album =
@@ -382,12 +853,21 @@ function nextTrack() {
 
 
     if (
-        currentTrack <
+        !album.tracks.length
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        currentTrackIndex <
         album.tracks.length - 1
     ) {
 
         loadTrack(
-            currentTrack + 1
+            currentTrackIndex + 1
         );
 
     } else {
@@ -402,14 +882,22 @@ function nextTrack() {
 }
 
 
+/* =========================
+   SHUFFLE
+========================= */
+
 function shuffleTrack() {
 
     const album =
         getAlbum();
 
 
-    if (!album.tracks.length) {
+    if (
+        !album.tracks.length
+    ) {
+
         return;
+
     }
 
 
@@ -422,7 +910,7 @@ function shuffleTrack() {
 
     if (
         album.tracks.length > 1 &&
-        next === currentTrack
+        next === currentTrackIndex
     ) {
 
         next =
@@ -439,6 +927,43 @@ function shuffleTrack() {
 }
 
 
+/* =========================
+   PLAY ALBUM
+========================= */
+
+function playAlbum() {
+
+    const album =
+        getAlbum();
+
+
+    if (
+        !album.tracks.length
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        currentTrackIndex === -1
+    ) {
+
+        loadTrack(0);
+
+    }
+
+
+    playTrack();
+
+}
+
+
+/* =========================
+   PLAYER UI
+========================= */
+
 function updatePlayButton() {
 
     const playing =
@@ -447,28 +972,54 @@ function updatePlayButton() {
 
 
     playButton.textContent =
-        playing ? "Ⅱ" : "▶";
+        playing
+            ? "Ⅱ"
+            : "▶";
 
 
-    playAlbumButton.querySelector(
-        "span"
-    ).textContent =
-        playing ? "Ⅱ" : "▶";
+    const playIcon =
+        playAlbumButton.querySelector(
+            "span"
+        );
+
+
+    if (playIcon) {
+
+        playIcon.textContent =
+            playing
+                ? "Ⅱ"
+                : "▶";
+
+    }
 
 }
 
 
 function updateProgress() {
 
-    if (!audio.duration) {
+    if (
+        !audio.duration
+    ) {
+
+        currentTime.textContent =
+            "0:00";
+
+        totalTime.textContent =
+            "0:00";
+
+        progress.value =
+            0;
+
         return;
+
     }
 
 
     const percentage =
-        (audio.currentTime /
-            audio.duration) *
-        100;
+        (
+            audio.currentTime /
+            audio.duration
+        ) * 100;
 
 
     progress.value =
@@ -489,19 +1040,449 @@ function updateProgress() {
 }
 
 
-function escapeHtml(value) {
+/* =========================
+   DOWNLOAD ALBUM
+========================= */
 
-    return value
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+async function downloadAlbum() {
+
+    const album =
+        getAlbum();
+
+
+    if (
+        !album ||
+        !album.tracks.length
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        typeof JSZip ===
+        "undefined"
+    ) {
+
+        alert(
+            "The download system failed to load. Please refresh the page."
+        );
+
+        return;
+
+    }
+
+
+    const originalText =
+        downloadAlbumButton.textContent;
+
+
+    downloadAlbumButton.disabled =
+        true;
+
+
+    downloadAlbumButton.textContent =
+        "Preparing...";
+
+
+    try {
+
+        const zip =
+            new JSZip();
+
+
+        for (
+            const filename of album.tracks
+        ) {
+
+            const response =
+                await fetch(
+                    getTrackPath(
+                        album,
+                        filename
+                    )
+                );
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    `Could not download ${filename}`
+                );
+
+            }
+
+
+            const audioData =
+                await response.arrayBuffer();
+
+
+            zip.file(
+                filename,
+                audioData
+            );
+
+        }
+
+
+        downloadAlbumButton.textContent =
+            "Creating ZIP...";
+
+
+        const zipBlob =
+            await zip.generateAsync({
+
+                type: "blob",
+
+                compression: "STORE"
+
+            });
+
+
+        const downloadUrl =
+            URL.createObjectURL(
+                zipBlob
+            );
+
+
+        const link =
+            document.createElement("a");
+
+
+        link.href =
+            downloadUrl;
+
+
+        link.download =
+            `${album.name}.zip`;
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+
+        URL.revokeObjectURL(
+            downloadUrl
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Album download failed:",
+            error
+        );
+
+
+        alert(
+            "The album could not be downloaded. Check that all track files are uploaded correctly."
+        );
+
+
+    } finally {
+
+        downloadAlbumButton.disabled =
+            false;
+
+
+        downloadAlbumButton.textContent =
+            originalText;
+
+    }
 
 }
 
 
-/* PLAYER */
+/* =========================
+   SEARCH
+========================= */
+
+function openSearch() {
+
+    showView("search");
+
+
+    searchInput.focus();
+
+
+    renderSearchResults();
+
+}
+
+
+function renderSearchResults() {
+
+    const query =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    searchResults.innerHTML = "";
+
+
+    clearSearch.classList.toggle(
+        "visible",
+        query.length > 0
+    );
+
+
+    if (!query) {
+
+        searchEmpty.classList.remove(
+            "visible"
+        );
+
+        return;
+
+    }
+
+
+    const results = [];
+
+
+    albums.forEach(
+        (album, albumIndex) => {
+
+            album.tracks.forEach(
+                (filename, trackIndex) => {
+
+                    const trackName =
+                        getTrackName(
+                            filename
+                        );
+
+
+                    const matchesTrack =
+                        trackName
+                            .toLowerCase()
+                            .includes(query);
+
+
+                    const matchesAlbum =
+                        album.name
+                            .toLowerCase()
+                            .includes(query);
+
+
+                    if (
+                        matchesTrack ||
+                        matchesAlbum
+                    ) {
+
+                        results.push({
+
+                            albumIndex,
+
+                            trackIndex,
+
+                            filename,
+
+                            trackName,
+
+                            album
+
+                        });
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    if (!results.length) {
+
+        searchEmpty.classList.add(
+            "visible"
+        );
+
+        return;
+
+    }
+
+
+    searchEmpty.classList.remove(
+        "visible"
+    );
+
+
+    results.forEach(
+        (result, index) => {
+
+            const button =
+                document.createElement("button");
+
+
+            button.type =
+                "button";
+
+
+            button.className =
+                "search-result";
+
+
+            const path =
+                getTrackPath(
+                    result.album,
+                    result.filename
+                );
+
+
+            const duration =
+                durationCache.get(path);
+
+
+            button.innerHTML = `
+
+                <span class="search-result-number">
+                    ${String(index + 1).padStart(2, "0")}
+                </span>
+
+                <span class="search-result-info">
+
+                    <span class="search-result-title">
+                        ${escapeHtml(
+                            result.trackName
+                        )}
+                    </span>
+
+                    <span class="search-result-album">
+                        ${escapeHtml(
+                            result.album.name
+                        )}
+                    </span>
+
+                </span>
+
+                <span class="search-result-duration">
+                    ${
+                        duration
+                            ? formatTime(duration)
+                            : "—"
+                    }
+                </span>
+
+            `;
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    openAlbum(
+                        result.albumIndex
+                    );
+
+
+                    loadTrack(
+                        result.trackIndex
+                    );
+
+
+                    playTrack();
+
+                }
+            );
+
+
+            searchResults.appendChild(
+                button
+            );
+
+
+            loadDuration(
+                result.album,
+                result.filename
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   NAVIGATION EVENTS
+========================= */
+
+libraryButton.addEventListener(
+    "click",
+    () => {
+
+        showView("library");
+
+    }
+);
+
+
+searchButton.addEventListener(
+    "click",
+    () => {
+
+        openSearch();
+
+    }
+);
+
+
+brandButton.addEventListener(
+    "click",
+    () => {
+
+        showView("library");
+
+    }
+);
+
+
+backToLibrary.addEventListener(
+    "click",
+    () => {
+
+        showView("library");
+
+    }
+);
+
+
+/* =========================
+   ALBUM EVENTS
+========================= */
+
+playAlbumButton.addEventListener(
+    "click",
+    playAlbum
+);
+
+
+shuffleButton.addEventListener(
+    "click",
+    shuffleTrack
+);
+
+
+downloadAlbumButton.addEventListener(
+    "click",
+    downloadAlbum
+);
+
+
+/* =========================
+   PLAYER EVENTS
+========================= */
 
 playButton.addEventListener(
     "click",
@@ -518,18 +1499,6 @@ previousButton.addEventListener(
 nextButton.addEventListener(
     "click",
     nextTrack
-);
-
-
-playAlbumButton.addEventListener(
-    "click",
-    togglePlay
-);
-
-
-shuffleButton.addEventListener(
-    "click",
-    shuffleTrack
 );
 
 
@@ -567,13 +1536,20 @@ progress.addEventListener(
     "input",
     () => {
 
-        if (!audio.duration) {
+        if (
+            !audio.duration
+        ) {
+
             return;
+
         }
 
 
         audio.currentTime =
-            (progress.value / 100) *
+            (
+                Number(progress.value) /
+                100
+            ) *
             audio.duration;
 
     }
@@ -591,79 +1567,13 @@ volume.addEventListener(
 );
 
 
-/* SEARCH */
-
-searchButton.addEventListener(
-    "click",
-    () => {
-
-        searchArea.classList.add(
-            "visible"
-        );
-
-        searchButton.classList.add(
-            "active"
-        );
-
-        libraryButton.classList.remove(
-            "active"
-        );
-
-        searchInput.focus();
-
-    }
-);
-
-
-libraryButton.addEventListener(
-    "click",
-    () => {
-
-        searchArea.classList.remove(
-            "visible"
-        );
-
-        searchButton.classList.remove(
-            "active"
-        );
-
-        libraryButton.classList.add(
-            "active"
-        );
-
-        searchInput.value = "";
-
-        renderTracks();
-
-    }
-);
-
-
-homeButton.addEventListener(
-    "click",
-    () => {
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-
-    }
-);
-
+/* =========================
+   SEARCH EVENTS
+========================= */
 
 searchInput.addEventListener(
     "input",
-    () => {
-
-        clearSearch.classList.toggle(
-            "visible",
-            searchInput.value.length > 0
-        );
-
-        renderTracks();
-
-    }
+    renderSearchResults
 );
 
 
@@ -671,21 +1581,20 @@ clearSearch.addEventListener(
     "click",
     () => {
 
-        searchInput.value = "";
-
-        clearSearch.classList.remove(
-            "visible"
-        );
+        searchInput.value =
+            "";
 
         searchInput.focus();
 
-        renderTracks();
+        renderSearchResults();
 
     }
 );
 
 
-/* KEYBOARD CONTROLS */
+/* =========================
+   KEYBOARD CONTROLS
+========================= */
 
 document.addEventListener(
     "keydown",
@@ -695,11 +1604,15 @@ document.addEventListener(
             event.target.tagName === "INPUT" ||
             event.target.tagName === "TEXTAREA"
         ) {
+
             return;
+
         }
 
 
-        if (event.code === "Space") {
+        if (
+            event.code === "Space"
+        ) {
 
             event.preventDefault();
 
@@ -729,4 +1642,13 @@ document.addEventListener(
 );
 
 
-renderAlbum();
+/* =========================
+   INITIALIZE
+========================= */
+
+renderLibrary();
+
+showView("library");
+
+audio.volume =
+    Number(volume.value);
