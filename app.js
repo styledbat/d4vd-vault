@@ -1,7 +1,7 @@
 /* =========================================================
    d4vd.vault
    Main application
-========================================================= */
+   ========================================================= */
 
 
 /* =========================
@@ -97,6 +97,9 @@ const shuffleButton =
 const downloadAlbumButton =
     document.getElementById("download-album");
 
+const copyAlbumLinkButton =
+    document.getElementById("copy-album-link");
+
 
 /* Search */
 
@@ -172,14 +175,261 @@ function getAlbum(index = currentAlbumIndex) {
 
 function getAlbumCover(album) {
 
-    return `${R2_BASE_URL}/${encodeURIComponent(album.folder)}/${encodeURIComponent(album.cover)}`;
+    return `${R2_BASE_URL}/${encodeURIComponent(
+        album.folder
+    )}/${encodeURIComponent(
+        album.cover
+    )}`;
 
 }
 
 
 function getTrackPath(album, filename) {
 
-    return `${R2_BASE_URL}/${encodeURIComponent(album.folder)}/${encodeURIComponent(filename)}`;
+    return `${R2_BASE_URL}/${encodeURIComponent(
+        album.folder
+    )}/${encodeURIComponent(
+        filename
+    )}`;
+
+}
+
+
+function getAlbumUrl(albumIndex) {
+
+    const album =
+        albums[albumIndex];
+
+    if (!album) {
+
+        return window.location.href;
+
+    }
+
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+
+    url.search = "";
+
+    url.hash = "";
+
+
+    url.searchParams.set(
+        "album",
+        album.folder
+    );
+
+
+    return url.toString();
+
+}
+
+
+function getTrackUrl(
+    albumIndex,
+    trackIndex
+) {
+
+    const album =
+        albums[albumIndex];
+
+    if (
+        !album ||
+        !album.tracks[trackIndex]
+    ) {
+
+        return window.location.href;
+
+    }
+
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+
+    url.search = "";
+
+    url.hash = "";
+
+
+    url.searchParams.set(
+        "album",
+        album.folder
+    );
+
+
+    url.searchParams.set(
+        "track",
+        album.tracks[trackIndex]
+    );
+
+
+    return url.toString();
+
+}
+
+
+async function copyText(text) {
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        return true;
+
+    } catch (error) {
+
+        try {
+
+            const textarea =
+                document.createElement("textarea");
+
+
+            textarea.value =
+                text;
+
+
+            textarea.style.position =
+                "fixed";
+
+            textarea.style.opacity =
+                "0";
+
+
+            document.body.appendChild(
+                textarea
+            );
+
+
+            textarea.focus();
+
+            textarea.select();
+
+
+            const successful =
+                document.execCommand(
+                    "copy"
+                );
+
+
+            textarea.remove();
+
+
+            return successful;
+
+        } catch (fallbackError) {
+
+            console.error(
+                "Copy failed:",
+                fallbackError
+            );
+
+            return false;
+
+        }
+
+    }
+
+}
+
+
+async function copyAlbumLink() {
+
+    const url =
+        getAlbumUrl(
+            currentAlbumIndex
+        );
+
+
+    const copied =
+        await copyText(url);
+
+
+    if (!copied) {
+
+        alert(
+            "Could not copy the link."
+        );
+
+        return;
+
+    }
+
+
+    const originalText =
+        copyAlbumLinkButton.textContent;
+
+
+    copyAlbumLinkButton.textContent =
+        "✓ Copied";
+
+
+    setTimeout(
+        () => {
+
+            copyAlbumLinkButton.textContent =
+                originalText;
+
+        },
+        1600
+    );
+
+}
+
+
+async function copyTrackLink(
+    albumIndex,
+    trackIndex,
+    button
+) {
+
+    const url =
+        getTrackUrl(
+            albumIndex,
+            trackIndex
+        );
+
+
+    const copied =
+        await copyText(url);
+
+
+    if (!copied) {
+
+        alert(
+            "Could not copy the link."
+        );
+
+        return;
+
+    }
+
+
+    const originalText =
+        button.textContent;
+
+
+    button.textContent =
+        "✓";
+
+
+    setTimeout(
+        () => {
+
+            button.textContent =
+                originalText;
+
+        },
+        1600
+    );
 
 }
 
@@ -188,14 +438,25 @@ function getTrackName(filename) {
 
     return filename
 
-        .replace(/\.[^/.]+$/, "")
+        .replace(
+            /\.[^/.]+$/,
+            ""
+        )
 
-        .replace(/^\d+-/, "")
+        .replace(
+            /^\d+-/,
+            ""
+        )
 
-        .replace(/-/g, " ")
+        .replace(
+            /-/g,
+            " "
+        )
 
-        .replace(/\b\w/g, character =>
-            character.toUpperCase()
+        .replace(
+            /\b\w/g,
+            character =>
+                character.toUpperCase()
         );
 
 }
@@ -203,7 +464,9 @@ function getTrackName(filename) {
 
 function formatTime(seconds) {
 
-    if (!Number.isFinite(seconds)) {
+    if (
+        !Number.isFinite(seconds)
+    ) {
 
         return "0:00";
 
@@ -211,13 +474,20 @@ function formatTime(seconds) {
 
 
     const minutes =
-        Math.floor(seconds / 60);
+        Math.floor(
+            seconds / 60
+        );
 
 
     const remainingSeconds =
-        Math.floor(seconds % 60)
+        Math.floor(
+            seconds % 60
+        )
             .toString()
-            .padStart(2, "0");
+            .padStart(
+                2,
+                "0"
+            );
 
 
     return `${minutes}:${remainingSeconds}`;
@@ -229,15 +499,30 @@ function escapeHtml(value) {
 
     return value
 
-        .replaceAll("&", "&amp;")
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
 
-        .replaceAll("<", "&lt;")
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
 
-        .replaceAll(">", "&gt;")
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
 
-        .replaceAll('"', "&quot;")
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
 
-        .replaceAll("'", "&#039;");
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
 
 }
 
@@ -270,7 +555,9 @@ function showView(viewName) {
     );
 
 
-    if (viewName === "library") {
+    if (
+        viewName === "library"
+    ) {
 
         libraryView.classList.add(
             "active-view"
@@ -286,7 +573,9 @@ function showView(viewName) {
     }
 
 
-    if (viewName === "album") {
+    if (
+        viewName === "album"
+    ) {
 
         albumView.classList.add(
             "active-view"
@@ -296,13 +585,19 @@ function showView(viewName) {
             "active"
         );
 
+        const album =
+            getAlbum();
+
+
         document.title =
-            `${getAlbum().name} — d4vd.vault`;
+            `${album.name} — d4vd.vault`;
 
     }
 
 
-    if (viewName === "search") {
+    if (
+        viewName === "search"
+    ) {
 
         searchView.classList.add(
             "active-view"
@@ -319,8 +614,11 @@ function showView(viewName) {
 
 
     window.scrollTo({
+
         top: 0,
+
         behavior: "instant"
+
     });
 
 }
@@ -332,16 +630,22 @@ function showView(viewName) {
 
 function renderLibrary() {
 
-    albumGrid.innerHTML = "";
+    albumGrid.innerHTML =
+        "";
 
 
     libraryTotal.textContent =
         `${albums.length
             .toString()
-            .padStart(2, "0")} RELEASES`;
+            .padStart(
+                2,
+                "0"
+            )} RELEASES`;
 
 
-    if (!albums.length) {
+    if (
+        !albums.length
+    ) {
 
         libraryEmpty.classList.add(
             "visible"
@@ -358,10 +662,15 @@ function renderLibrary() {
 
 
     albums.forEach(
-        (album, index) => {
+        (
+            album,
+            index
+        ) => {
 
             const card =
-                document.createElement("button");
+                document.createElement(
+                    "button"
+                );
 
 
             card.type =
@@ -373,7 +682,9 @@ function renderLibrary() {
 
 
             const cover =
-                getAlbumCover(album);
+                getAlbumCover(
+                    album
+                );
 
 
             card.innerHTML = `
@@ -382,20 +693,28 @@ function renderLibrary() {
 
                     <img
                         src="${cover}"
-                        alt="${escapeHtml(album.name)} artwork"
+                        alt="${escapeHtml(
+                            album.name
+                        )} artwork"
                         loading="lazy"
                     >
 
                 </div>
 
                 <div class="album-card-title">
-                    ${escapeHtml(album.name)}
+                    ${escapeHtml(
+                        album.name
+                    )}
                 </div>
 
                 <div class="album-card-meta">
-                    ${escapeHtml(album.type || "Release")}
+                    ${escapeHtml(
+                        album.type ||
+                        "Release"
+                    )}
                     ·
-                    ${album.tracks.length} tracks
+                    ${album.tracks.length}
+                    tracks
                 </div>
 
             `;
@@ -405,13 +724,17 @@ function renderLibrary() {
                 "click",
                 () => {
 
-                    openAlbum(index);
+                    openAlbum(
+                        index
+                    );
 
                 }
             );
 
 
-            albumGrid.appendChild(card);
+            albumGrid.appendChild(
+                card
+            );
 
         }
     );
@@ -423,9 +746,15 @@ function renderLibrary() {
    OPEN ALBUM
 ========================= */
 
-function openAlbum(index) {
+function openAlbum(
+    index,
+    trackIndex = -1,
+    updateUrl = true
+) {
 
-    if (!albums[index]) {
+    if (
+        !albums[index]
+    ) {
 
         return;
 
@@ -441,13 +770,79 @@ function openAlbum(index) {
 
 
     currentPlaylist =
-        [...albums[index].tracks];
+        [
+            ...albums[index].tracks
+        ];
 
 
     renderAlbum();
 
 
-    showView("album");
+    showView(
+        "album"
+    );
+
+
+    if (
+        updateUrl
+    ) {
+
+        const url =
+            new URL(
+                window.location.href
+            );
+
+
+        url.search = "";
+
+        url.hash = "";
+
+
+        url.searchParams.set(
+            "album",
+            albums[index].folder
+        );
+
+
+        if (
+            trackIndex >= 0 &&
+            albums[index].tracks[
+                trackIndex
+            ]
+        ) {
+
+            url.searchParams.set(
+                "track",
+                albums[index].tracks[
+                    trackIndex
+                ]
+            );
+
+        }
+
+
+        window.history.pushState(
+            {},
+            "",
+            url
+        );
+
+    }
+
+
+    if (
+        trackIndex >= 0 &&
+        albums[index].tracks[
+            trackIndex
+        ]
+    ) {
+
+        loadTrack(
+            trackIndex,
+            false
+        );
+
+    }
 
 }
 
@@ -463,7 +858,9 @@ function renderAlbum() {
 
 
     const cover =
-        getAlbumCover(album);
+        getAlbumCover(
+            album
+        );
 
 
     albumCover.src =
@@ -493,7 +890,10 @@ function renderAlbum() {
     trackCount.textContent =
         album.tracks.length
             .toString()
-            .padStart(2, "0");
+            .padStart(
+                2,
+                "0"
+            );
 
 
     playerCover.src =
@@ -515,10 +915,13 @@ function renderTracks() {
         getAlbum();
 
 
-    trackList.innerHTML = "";
+    trackList.innerHTML =
+        "";
 
 
-    if (!album.tracks.length) {
+    if (
+        !album.tracks.length
+    ) {
 
         albumEmpty.classList.add(
             "visible"
@@ -535,17 +938,18 @@ function renderTracks() {
 
 
     album.tracks.forEach(
-        (filename, index) => {
+        (
+            filename,
+            index
+        ) => {
 
-            const button =
-                document.createElement("button");
+            const row =
+                document.createElement(
+                    "div"
+                );
 
 
-            button.type =
-                "button";
-
-
-            button.className =
+            row.className =
                 "track";
 
 
@@ -554,7 +958,7 @@ function renderTracks() {
                 currentTrackIndex
             ) {
 
-                button.classList.add(
+                row.classList.add(
                     "active"
                 );
 
@@ -569,37 +973,105 @@ function renderTracks() {
 
 
             const cachedDuration =
-                durationCache.get(path);
+                durationCache.get(
+                    path
+                );
 
 
-            button.innerHTML = `
+            row.innerHTML = `
 
-                <span class="track-number">
-                    ${String(index + 1).padStart(2, "0")}
-                </span>
+                <button
+                    type="button"
+                    class="track-main"
+                    aria-label="Play ${escapeHtml(
+                        getTrackName(
+                            filename
+                        )
+                    )}"
+                >
 
-                <span class="track-name">
-                    ${escapeHtml(
-                        getTrackName(filename)
-                    )}
-                </span>
+                    <span class="track-number">
+                        ${String(
+                            index + 1
+                        ).padStart(
+                            2,
+                            "0"
+                        )}
+                    </span>
 
-                <span class="track-duration">
-                    ${
-                        cachedDuration
-                            ? formatTime(cachedDuration)
-                            : "—"
-                    }
-                </span>
+                    <span class="track-name">
+                        ${escapeHtml(
+                            getTrackName(
+                                filename
+                            )
+                        )}
+                    </span>
+
+                    <span class="track-duration">
+                        ${
+                            cachedDuration
+                                ? formatTime(
+                                    cachedDuration
+                                )
+                                : "—"
+                        }
+                    </span>
+
+                </button>
+
+
+                <div class="track-actions">
+
+                    <button
+                        type="button"
+                        class="track-action"
+                        data-action="copy"
+                        aria-label="Copy track link"
+                        title="Copy track link"
+                    >
+                        ⧉
+                    </button>
+
+                    <button
+                        type="button"
+                        class="track-action"
+                        data-action="download"
+                        aria-label="Download track"
+                        title="Download track"
+                    >
+                        ↓
+                    </button>
+
+                </div>
 
             `;
 
 
-            button.addEventListener(
+            const mainButton =
+                row.querySelector(
+                    ".track-main"
+                );
+
+
+            const copyButton =
+                row.querySelector(
+                    '[data-action="copy"]'
+                );
+
+
+            const downloadButton =
+                row.querySelector(
+                    '[data-action="download"]'
+                );
+
+
+            mainButton.addEventListener(
                 "click",
                 () => {
 
-                    loadTrack(index);
+                    loadTrack(
+                        index
+                    );
 
                     playTrack();
 
@@ -607,8 +1079,42 @@ function renderTracks() {
             );
 
 
+            copyButton.addEventListener(
+                "click",
+                event => {
+
+                    event.stopPropagation();
+
+
+                    copyTrackLink(
+                        currentAlbumIndex,
+                        index,
+                        copyButton
+                    );
+
+                }
+            );
+
+
+            downloadButton.addEventListener(
+                "click",
+                event => {
+
+                    event.stopPropagation();
+
+
+                    downloadTrack(
+                        currentAlbumIndex,
+                        index,
+                        downloadButton
+                    );
+
+                }
+            );
+
+
             trackList.appendChild(
-                button
+                row
             );
 
 
@@ -640,7 +1146,9 @@ function loadDuration(
 
 
     if (
-        durationCache.has(path)
+        durationCache.has(
+            path
+        )
     ) {
 
         return;
@@ -671,28 +1179,13 @@ function loadDuration(
 
 
             if (
-                getAlbum() === album
+                getAlbum() ===
+                album
             ) {
 
                 renderTracks();
 
             }
-
-        },
-        {
-            once: true
-        }
-    );
-
-
-    temporaryAudio.addEventListener(
-        "error",
-        () => {
-
-            console.warn(
-                "Could not load duration:",
-                path
-            );
 
         },
         {
@@ -707,7 +1200,10 @@ function loadDuration(
    LOAD TRACK
 ========================= */
 
-function loadTrack(index) {
+function loadTrack(
+    index,
+    updateUrl = true
+) {
 
     const album =
         getAlbum();
@@ -729,7 +1225,9 @@ function loadTrack(index) {
 
 
     currentPlaylist =
-        [...album.tracks];
+        [
+            ...album.tracks
+        ];
 
 
     audio.src =
@@ -743,7 +1241,9 @@ function loadTrack(index) {
 
 
     nowTitle.textContent =
-        getTrackName(filename);
+        getTrackName(
+            filename
+        );
 
 
     nowArtist.textContent =
@@ -751,13 +1251,51 @@ function loadTrack(index) {
 
 
     playerCover.src =
-        getAlbumCover(album);
+        getAlbumCover(
+            album
+        );
 
 
     renderTracks();
 
 
     updateProgress();
+
+
+    if (
+        updateUrl
+    ) {
+
+        const url =
+            new URL(
+                window.location.href
+            );
+
+
+        url.search = "";
+
+        url.hash = "";
+
+
+        url.searchParams.set(
+            "album",
+            album.folder
+        );
+
+
+        url.searchParams.set(
+            "track",
+            filename
+        );
+
+
+        window.history.pushState(
+            {},
+            "",
+            url
+        );
+
+    }
 
 }
 
@@ -768,7 +1306,9 @@ function loadTrack(index) {
 
 function playTrack() {
 
-    if (!audio.src) {
+    if (
+        !audio.src
+    ) {
 
         loadTrack(
             currentTrackIndex >= 0
@@ -780,14 +1320,16 @@ function playTrack() {
 
 
     audio.play()
-        .catch(error => {
+        .catch(
+            error => {
 
-            console.error(
-                "Playback error:",
-                error
-            );
+                console.error(
+                    "Playback error:",
+                    error
+                );
 
-        });
+            }
+        );
 
 }
 
@@ -801,9 +1343,13 @@ function pauseTrack() {
 
 function togglePlay() {
 
-    if (!audio.src) {
+    if (
+        !audio.src
+    ) {
 
-        loadTrack(0);
+        loadTrack(
+            0
+        );
 
         playTrack();
 
@@ -812,7 +1358,9 @@ function togglePlay() {
     }
 
 
-    if (audio.paused) {
+    if (
+        audio.paused
+    ) {
 
         playTrack();
 
@@ -896,7 +1444,9 @@ function nextTrack() {
 
     } else {
 
-        loadTrack(0);
+        loadTrack(
+            0
+        );
 
     }
 
@@ -934,17 +1484,22 @@ function shuffleTrack() {
 
     if (
         album.tracks.length > 1 &&
-        next === currentTrackIndex
+        next ===
+        currentTrackIndex
     ) {
 
         next =
-            (next + 1) %
+            (
+                next + 1
+            ) %
             album.tracks.length;
 
     }
 
 
-    loadTrack(next);
+    loadTrack(
+        next
+    );
 
 
     playTrack();
@@ -975,7 +1530,9 @@ function playAlbum() {
         currentTrackIndex === -1
     ) {
 
-        loadTrack(0);
+        loadTrack(
+            0
+        );
 
     }
 
@@ -1008,7 +1565,9 @@ function updatePlayButton() {
         );
 
 
-    if (playIcon) {
+    if (
+        playIcon
+    ) {
 
         playIcon.textContent =
             playing
@@ -1069,6 +1628,140 @@ function updateProgress() {
 
 
 /* =========================
+   DOWNLOAD SINGLE TRACK
+========================= */
+
+async function downloadTrack(
+    albumIndex,
+    trackIndex,
+    button
+) {
+
+    const album =
+        albums[albumIndex];
+
+
+    if (
+        !album ||
+        !album.tracks[trackIndex]
+    ) {
+
+        return;
+
+    }
+
+
+    const filename =
+        album.tracks[
+            trackIndex
+        ];
+
+
+    const url =
+        getTrackPath(
+            album,
+            filename
+        );
+
+
+    const originalText =
+        button.textContent;
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "…";
+
+
+    try {
+
+        const response =
+            await fetch(
+                url
+            );
+
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                `Could not download ${filename}`
+            );
+
+        }
+
+
+        const blob =
+            await response.blob();
+
+
+        const downloadUrl =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href =
+            downloadUrl;
+
+
+        link.download =
+            filename;
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+
+        URL.revokeObjectURL(
+            downloadUrl
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Track download failed:",
+            error
+        );
+
+
+        alert(
+            "The track could not be downloaded. Check your R2 CORS settings."
+        );
+
+    } finally {
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            originalText;
+
+    }
+
+}
+
+
+/* =========================
    DOWNLOAD ALBUM
 ========================= */
 
@@ -1121,7 +1814,8 @@ async function downloadAlbum() {
 
 
         for (
-            const filename of album.tracks
+            const filename of
+            album.tracks
         ) {
 
             const response =
@@ -1177,7 +1871,9 @@ async function downloadAlbum() {
 
 
         const link =
-            document.createElement("a");
+            document.createElement(
+                "a"
+            );
 
 
         link.href =
@@ -1237,7 +1933,9 @@ async function downloadAlbum() {
 
 function openSearch() {
 
-    showView("search");
+    showView(
+        "search"
+    );
 
 
     searchInput.focus();
@@ -1256,7 +1954,8 @@ function renderSearchResults() {
             .toLowerCase();
 
 
-    searchResults.innerHTML = "";
+    searchResults.innerHTML =
+        "";
 
 
     clearSearch.classList.toggle(
@@ -1280,10 +1979,16 @@ function renderSearchResults() {
 
 
     albums.forEach(
-        (album, albumIndex) => {
+        (
+            album,
+            albumIndex
+        ) => {
 
             album.tracks.forEach(
-                (filename, trackIndex) => {
+                (
+                    filename,
+                    trackIndex
+                ) => {
 
                     const trackName =
                         getTrackName(
@@ -1294,13 +1999,17 @@ function renderSearchResults() {
                     const matchesTrack =
                         trackName
                             .toLowerCase()
-                            .includes(query);
+                            .includes(
+                                query
+                            );
 
 
                     const matchesAlbum =
                         album.name
                             .toLowerCase()
-                            .includes(query);
+                            .includes(
+                                query
+                            );
 
 
                     if (
@@ -1331,7 +2040,9 @@ function renderSearchResults() {
     );
 
 
-    if (!results.length) {
+    if (
+        !results.length
+    ) {
 
         searchEmpty.classList.add(
             "visible"
@@ -1348,10 +2059,15 @@ function renderSearchResults() {
 
 
     results.forEach(
-        (result, index) => {
+        (
+            result,
+            index
+        ) => {
 
             const button =
-                document.createElement("button");
+                document.createElement(
+                    "button"
+                );
 
 
             button.type =
@@ -1370,14 +2086,22 @@ function renderSearchResults() {
 
 
             const duration =
-                durationCache.get(path);
+                durationCache.get(
+                    path
+                );
 
 
             button.innerHTML = `
 
                 <span class="search-result-number">
-                    ${String(index + 1).padStart(2, "0")}
+                    ${String(
+                        index + 1
+                    ).padStart(
+                        2,
+                        "0"
+                    )}
                 </span>
+
 
                 <span class="search-result-info">
 
@@ -1387,6 +2111,7 @@ function renderSearchResults() {
                         )}
                     </span>
 
+
                     <span class="search-result-album">
                         ${escapeHtml(
                             result.album.name
@@ -1395,10 +2120,13 @@ function renderSearchResults() {
 
                 </span>
 
+
                 <span class="search-result-duration">
                     ${
                         duration
-                            ? formatTime(duration)
+                            ? formatTime(
+                                duration
+                            )
                             : "—"
                     }
                 </span>
@@ -1411,11 +2139,7 @@ function renderSearchResults() {
                 () => {
 
                     openAlbum(
-                        result.albumIndex
-                    );
-
-
-                    loadTrack(
+                        result.albumIndex,
                         result.trackIndex
                     );
 
@@ -1443,6 +2167,85 @@ function renderSearchResults() {
 
 
 /* =========================
+   URL / DEEP LINKING
+========================= */
+
+function findAlbumFromUrl() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const albumFolder =
+        params.get(
+            "album"
+        );
+
+
+    const trackFilename =
+        params.get(
+            "track"
+        );
+
+
+    if (
+        !albumFolder
+    ) {
+
+        return;
+
+    }
+
+
+    const albumIndex =
+        albums.findIndex(
+            album =>
+                album.folder ===
+                albumFolder
+        );
+
+
+    if (
+        albumIndex === -1
+    ) {
+
+        return;
+
+    }
+
+
+    let trackIndex =
+        -1;
+
+
+    if (
+        trackFilename
+    ) {
+
+        trackIndex =
+            albums[
+                albumIndex
+            ].tracks.findIndex(
+                filename =>
+                    filename ===
+                    trackFilename
+            );
+
+    }
+
+
+    openAlbum(
+        albumIndex,
+        trackIndex,
+        false
+    );
+
+}
+
+
+/* =========================
    NAVIGATION EVENTS
 ========================= */
 
@@ -1450,7 +2253,27 @@ libraryButton.addEventListener(
     "click",
     () => {
 
-        showView("library");
+        const url =
+            new URL(
+                window.location.href
+            );
+
+
+        url.search = "";
+
+        url.hash = "";
+
+
+        window.history.pushState(
+            {},
+            "",
+            url
+        );
+
+
+        showView(
+            "library"
+        );
 
     }
 );
@@ -1470,7 +2293,27 @@ brandButton.addEventListener(
     "click",
     () => {
 
-        showView("library");
+        const url =
+            new URL(
+                window.location.href
+            );
+
+
+        url.search = "";
+
+        url.hash = "";
+
+
+        window.history.pushState(
+            {},
+            "",
+            url
+        );
+
+
+        showView(
+            "library"
+        );
 
     }
 );
@@ -1480,7 +2323,27 @@ backToLibrary.addEventListener(
     "click",
     () => {
 
-        showView("library");
+        const url =
+            new URL(
+                window.location.href
+            );
+
+
+        url.search = "";
+
+        url.hash = "";
+
+
+        window.history.pushState(
+            {},
+            "",
+            url
+        );
+
+
+        showView(
+            "library"
+        );
 
     }
 );
@@ -1505,6 +2368,12 @@ shuffleButton.addEventListener(
 downloadAlbumButton.addEventListener(
     "click",
     downloadAlbum
+);
+
+
+copyAlbumLinkButton.addEventListener(
+    "click",
+    copyAlbumLink
 );
 
 
@@ -1575,8 +2444,9 @@ progress.addEventListener(
 
         audio.currentTime =
             (
-                Number(progress.value) /
-                100
+                Number(
+                    progress.value
+                ) / 100
             ) *
             audio.duration;
 
@@ -1589,7 +2459,9 @@ volume.addEventListener(
     () => {
 
         audio.volume =
-            Number(volume.value);
+            Number(
+                volume.value
+            );
 
     }
 );
@@ -1631,8 +2503,10 @@ document.addEventListener(
     event => {
 
         if (
-            event.target.tagName === "INPUT" ||
-            event.target.tagName === "TEXTAREA"
+            event.target.tagName ===
+                "INPUT" ||
+            event.target.tagName ===
+                "TEXTAREA"
         ) {
 
             return;
@@ -1641,7 +2515,8 @@ document.addEventListener(
 
 
         if (
-            event.code === "Space"
+            event.code ===
+            "Space"
         ) {
 
             event.preventDefault();
@@ -1652,7 +2527,8 @@ document.addEventListener(
 
 
         if (
-            event.code === "ArrowLeft"
+            event.code ===
+            "ArrowLeft"
         ) {
 
             previousTrack();
@@ -1661,10 +2537,45 @@ document.addEventListener(
 
 
         if (
-            event.code === "ArrowRight"
+            event.code ===
+            "ArrowRight"
         ) {
 
             nextTrack();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   BROWSER HISTORY
+========================= */
+
+window.addEventListener(
+    "popstate",
+    () => {
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        if (
+            params.has(
+                "album"
+            )
+        ) {
+
+            findAlbumFromUrl();
+
+        } else {
+
+            showView(
+                "library"
+            );
 
         }
 
@@ -1678,7 +2589,15 @@ document.addEventListener(
 
 renderLibrary();
 
-showView("library");
+showView(
+    "library"
+);
+
 
 audio.volume =
-    Number(volume.value);
+    Number(
+        volume.value
+    );
+
+
+findAlbumFromUrl();
