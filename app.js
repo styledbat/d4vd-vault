@@ -5,6 +5,14 @@
 
 
 /* =========================
+   R2 CONFIGURATION
+========================= */
+
+const R2_BASE_URL =
+    "https://pub-d9bd233ceeaa46968d21cdfda84af3d9.r2.dev";
+
+
+/* =========================
    ELEMENTS
 ========================= */
 
@@ -164,14 +172,14 @@ function getAlbum(index = currentAlbumIndex) {
 
 function getAlbumCover(album) {
 
-    return `albums/${album.folder}/${album.cover}`;
+    return `${R2_BASE_URL}/${encodeURIComponent(album.folder)}/${encodeURIComponent(album.cover)}`;
 
 }
 
 
 function getTrackPath(album, filename) {
 
-    return `albums/${album.folder}/${filename}`;
+    return `${R2_BASE_URL}/${encodeURIComponent(album.folder)}/${encodeURIComponent(filename)}`;
 
 }
 
@@ -676,6 +684,22 @@ function loadDuration(
         }
     );
 
+
+    temporaryAudio.addEventListener(
+        "error",
+        () => {
+
+            console.warn(
+                "Could not load duration:",
+                path
+            );
+
+        },
+        {
+            once: true
+        }
+    );
+
 }
 
 
@@ -922,6 +946,7 @@ function shuffleTrack() {
 
     loadTrack(next);
 
+
     playTrack();
 
 }
@@ -1004,11 +1029,14 @@ function updateProgress() {
         currentTime.textContent =
             "0:00";
 
+
         totalTime.textContent =
             "0:00";
 
+
         progress.value =
             0;
+
 
         return;
 
@@ -1185,7 +1213,7 @@ async function downloadAlbum() {
 
 
         alert(
-            "The album could not be downloaded. Check that all track files are uploaded correctly."
+            "The album could not be downloaded. Check that all track files are uploaded correctly and that R2 CORS is configured."
         );
 
 
@@ -1584,7 +1612,9 @@ clearSearch.addEventListener(
         searchInput.value =
             "";
 
+
         searchInput.focus();
+
 
         renderSearchResults();
 
