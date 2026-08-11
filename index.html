@@ -2,379 +2,286 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="theme-color"
-        content="#080808"
-    >
-
-    <meta
-        name="description"
-        content="d4vd.vault — private music archive"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>d4vd.vault</title>
+    <meta
+        name="description"
+        content="d4vd.vault — classified vault access."
+    >
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
         rel="stylesheet"
     >
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- =========================
-         TOP NAVIGATION
-    ========================== -->
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
 
-    <header class="topbar">
+        <a href="./" class="brand">d4vd.vault</a>
 
-        <button
-            class="brand"
-            id="brand-button"
-            type="button"
-        >
-            d4vd.vault
-        </button>
+        <nav class="main-nav">
+            <button class="nav-item active" data-page="home">
+                <span>⌂</span>
+                Home
+            </button>
 
-        <nav class="top-nav">
-
-            <button
-                class="nav-link active"
-                id="library-button"
-                type="button"
-            >
+            <button class="nav-item" data-page="library">
+                <span>▦</span>
                 Library
             </button>
-
-            <button
-                class="nav-link"
-                id="search-button"
-                type="button"
-            >
-                Search
-            </button>
-
         </nav>
 
-        <div class="top-status">
-            <span class="status-dot"></span>
-            PRIVATE ARCHIVE
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-label">VAULT</div>
+
+        <div id="sidebarAlbums" class="sidebar-albums"></div>
+
+        <div class="sidebar-bottom">
+            CLASSIFIED<br>
+            VAULT ACCESS
         </div>
 
-    </header>
+    </aside>
 
 
-    <!-- =========================
-         MAIN APPLICATION
-    ========================== -->
+    <!-- MAIN -->
+    <main class="main">
 
-    <main class="site">
+        <!-- HOME PAGE -->
+        <section id="homePage" class="page active-page">
+
+            <header class="topbar">
+                <div class="mobile-brand">d4vd.vault</div>
+
+                <button class="mobile-menu" id="mobileMenu">
+                    ☰
+                </button>
+            </header>
 
 
-        <!-- =========================
-             LIBRARY VIEW
-        ========================== -->
+            <section class="hero">
 
-        <section
-            id="library-view"
-            class="view active-view"
-        >
+                <div class="hero-copy">
+                    <div class="eyebrow">D4VD / ARCHIVE</div>
 
-            <div class="page-heading">
+                    <h1>d4vd</h1>
 
-                <div>
-                    <p class="eyebrow">
-                        d4vd.vault
+                    <p>
+                        A private archive of music, demos,
+                        unreleased material and projects.
                     </p>
-
-                    <h1>
-                        Library
-                    </h1>
                 </div>
 
-                <p
-                    class="library-total"
-                    id="library-total"
-                >
-                    00 RELEASES
-                </p>
+                <div class="hero-meta">
+                    <span>CLASSIFIED VAULT ACCESS</span>
+                    <span id="trackCount">0 TRACKS</span>
+                </div>
 
-            </div>
+            </section>
 
 
-            <div
-                id="album-grid"
-                class="album-grid"
-            ></div>
+            <!-- SEARCH -->
+            <section class="search-section">
+
+                <div class="section-heading">
+                    <span>SEARCH THE VAULT</span>
+                </div>
+
+                <div class="search-box">
+                    <span class="search-icon">⌕</span>
+
+                    <input
+                        id="searchInput"
+                        type="search"
+                        placeholder="Search tracks, albums..."
+                        autocomplete="off"
+                    >
+
+                    <button id="clearSearch" class="clear-search">
+                        ×
+                    </button>
+                </div>
+
+            </section>
 
 
-            <div
-                id="library-empty"
-                class="empty-state"
+            <!-- SEARCH RESULTS -->
+            <section
+                id="searchResultsSection"
+                class="results-section hidden"
             >
-                No releases available.
-            </div>
+
+                <div class="section-heading">
+                    <span>RESULTS</span>
+                    <span id="resultCount"></span>
+                </div>
+
+                <div id="searchResults" class="track-list"></div>
+
+            </section>
+
+
+            <!-- RECENT / FEATURED -->
+            <section id="homeAlbums" class="home-albums">
+
+                <div class="section-heading">
+                    <span>IN THE VAULT</span>
+                    <button
+                        class="text-button"
+                        data-page="library"
+                    >
+                        VIEW ALL →
+                    </button>
+                </div>
+
+                <div id="featuredAlbums" class="featured-grid"></div>
+
+            </section>
 
         </section>
 
 
-        <!-- =========================
-             ALBUM VIEW
-        ========================== -->
+        <!-- LIBRARY PAGE -->
+        <section id="libraryPage" class="page">
 
-        <section
-            id="album-view"
-            class="view"
-        >
+            <header class="page-header">
 
-            <button
-                class="back-button"
-                id="back-to-library"
-                type="button"
-            >
-                ← Library
-            </button>
+                <div>
+                    <div class="eyebrow">ARCHIVE</div>
+                    <h2>Library</h2>
+                </div>
+
+                <div id="libraryCount" class="page-count">
+                    0 RELEASES
+                </div>
+
+            </header>
+
+            <div id="libraryGrid" class="library-grid"></div>
+
+        </section>
 
 
-            <section class="release-header">
+        <!-- ALBUM PAGE -->
+        <section id="albumPage" class="page">
 
-                <div class="cover-wrap">
+            <header class="album-header">
+
+                <button id="backToLibrary" class="back-button">
+                    ← Library
+                </button>
+
+                <div class="album-header-content">
 
                     <img
-                        id="album-cover"
+                        id="albumCover"
                         class="album-cover"
                         src=""
                         alt=""
                     >
 
-                </div>
+                    <div class="album-info">
 
+                        <div id="albumType" class="eyebrow">
+                            EP
+                        </div>
 
-                <div class="release-info">
-
-                    <p
-                        class="release-type"
-                        id="album-type"
-                    >
-                        EP / ARCHIVE
-                    </p>
-
-                    <h1 id="album-title">
-                        —
-                    </h1>
-
-                    <p
-                        class="release-meta"
-                        id="album-meta"
-                    >
-                        —
-                    </p>
-
-
-                    <div class="release-actions">
-
-                        <button
-                            class="primary-button"
-                            id="play-album"
-                            type="button"
-                        >
-                            <span>▶</span>
-                            Play
-                        </button>
-
-                        <button
-                            class="secondary-button"
-                            id="shuffle-button"
-                            type="button"
-                        >
-                            Shuffle
-                        </button>
-
-                        <button
-                            class="secondary-button"
-                            id="download-album"
-                            type="button"
-                        >
-                            ↓ Download
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <section class="track-section">
-
-                <div class="section-heading">
-
-                    <div>
-                        <p class="eyebrow">
-                            TRACKLIST
-                        </p>
-
-                        <h2 id="tracklist-title">
-                            —
+                        <h2 id="albumTitle">
+                            Album
                         </h2>
+
+                        <div class="album-details">
+                            <span>d4vd</span>
+                            <span>•</span>
+                            <span id="albumTrackCount">
+                                0 tracks
+                            </span>
+                        </div>
+
+                        <div class="album-actions">
+
+                            <button
+                                id="albumPlayButton"
+                                class="primary-button"
+                            >
+                                ▶ Play
+                            </button>
+
+                            <a
+                                id="albumDownload"
+                                class="secondary-button"
+                                href="#"
+                                download
+                            >
+                                ↓ Download
+                            </a>
+
+                            <button
+                                id="shareAlbum"
+                                class="secondary-button"
+                            >
+                                ↗ Share
+                            </button>
+
+                        </div>
+
+                        <div
+                            id="shareMessage"
+                            class="share-message"
+                        ></div>
+
                     </div>
 
-                    <p
-                        class="track-count"
-                        id="track-count"
-                    >
-                        00
-                    </p>
-
                 </div>
 
+            </header>
 
-                <div class="track-header">
 
+            <section class="album-tracks">
+
+                <div class="track-list-header">
                     <span>#</span>
-
-                    <span>Title</span>
-
-                    <span>Duration</span>
-
+                    <span>TRACK</span>
+                    <span>STATUS</span>
+                    <span>TIME</span>
                 </div>
 
-
-                <div
-                    id="track-list"
-                    class="track-list"
-                ></div>
-
-
-                <div
-                    id="album-empty"
-                    class="empty-state"
-                >
-                    No tracks available.
-                </div>
+                <div id="albumTracks" class="track-list"></div>
 
             </section>
 
         </section>
-
-
-        <!-- =========================
-             SEARCH VIEW
-        ========================== -->
-
-        <section
-            id="search-view"
-            class="view"
-        >
-
-            <div class="search-page-heading">
-
-                <p class="eyebrow">
-                    ARCHIVE SEARCH
-                </p>
-
-                <h1>
-                    Search the vault.
-                </h1>
-
-                <p class="search-description">
-                    Search across every release and track.
-                </p>
-
-            </div>
-
-
-            <div class="search-box">
-
-                <span class="search-symbol">
-                    /
-                </span>
-
-                <input
-                    id="search-input"
-                    type="search"
-                    placeholder="Search tracks or releases..."
-                    autocomplete="off"
-                >
-
-                <button
-                    id="clear-search"
-                    class="clear-search"
-                    type="button"
-                    aria-label="Clear search"
-                >
-                    ×
-                </button>
-
-            </div>
-
-
-            <div
-                id="search-results"
-                class="search-results"
-            ></div>
-
-
-            <div
-                id="search-empty"
-                class="empty-state"
-            >
-                No results found.
-            </div>
-
-        </section>
-
 
     </main>
 
 
-    <!-- =========================
-         BOTTOM PLAYER
-    ========================== -->
-
+    <!-- PLAYER -->
     <footer class="player">
 
-        <div class="player-track">
+        <div class="now-playing">
 
-            <img
-                id="player-cover"
-                class="player-cover"
-                src=""
-                alt=""
-            >
+            <div class="now-playing-art">
+                <img id="playerCover" src="" alt="">
+            </div>
 
-            <div class="player-track-info">
+            <div class="now-playing-info">
 
-                <span
-                    id="now-title"
-                    class="player-title"
-                >
-                    Select a track
-                </span>
+                <div id="playerTitle" class="player-title">
+                    Nothing playing
+                </div>
 
-                <span
-                    id="now-artist"
-                    class="player-artist"
-                >
+                <div id="playerArtist" class="player-artist">
                     d4vd
-                </span>
+                </div>
 
             </div>
 
@@ -385,77 +292,54 @@
 
             <div class="player-buttons">
 
-                <button
-                    id="previous-button"
-                    class="player-button"
-                    type="button"
-                    aria-label="Previous track"
-                >
-                    ‹‹
+                <button id="previousButton" class="player-button">
+                    ⏮
                 </button>
 
                 <button
-                    id="play-button"
-                    class="play-button"
-                    type="button"
-                    aria-label="Play"
+                    id="playPauseButton"
+                    class="player-play"
                 >
                     ▶
                 </button>
 
-                <button
-                    id="next-button"
-                    class="player-button"
-                    type="button"
-                    aria-label="Next track"
-                >
-                    ››
+                <button id="nextButton" class="player-button">
+                    ⏭
                 </button>
 
             </div>
 
 
-            <div class="timeline">
+            <div class="progress-row">
 
-                <span id="current-time">
-                    0:00
-                </span>
+                <span id="currentTime">0:00</span>
 
                 <input
-                    id="progress"
-                    class="progress"
+                    id="progressBar"
                     type="range"
                     min="0"
                     max="100"
                     value="0"
-                    step="0.1"
-                    aria-label="Track progress"
                 >
 
-                <span id="total-time">
-                    0:00
-                </span>
+                <span id="duration">0:00</span>
 
             </div>
 
         </div>
 
 
-        <div class="player-volume">
+        <div class="player-right">
 
-            <span>
-                VOL
-            </span>
+            <span>VOL</span>
 
             <input
-                id="volume"
-                class="volume"
+                id="volumeBar"
                 type="range"
                 min="0"
                 max="1"
-                value="1"
                 step="0.01"
-                aria-label="Volume"
+                value="1"
             >
 
         </div>
@@ -463,24 +347,26 @@
     </footer>
 
 
+    <!-- MOBILE NAV -->
+    <nav id="mobileNav" class="mobile-nav">
+
+        <button data-page="home">
+            <span>⌂</span>
+            Home
+        </button>
+
+        <button data-page="library">
+            <span>▦</span>
+            Library
+        </button>
+
+    </nav>
+
+
     <!-- AUDIO -->
-
-    <audio
-        id="audio"
-        preload="metadata"
-    ></audio>
-
-
-    <!-- ZIP LIBRARY -->
-
-    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-
-    <!-- YOUR DATA -->
+    <audio id="audioPlayer" preload="metadata"></audio>
 
     <script src="albums.js"></script>
-
-    <!-- SITE LOGIC -->
-
     <script src="app.js"></script>
 
 </body>
