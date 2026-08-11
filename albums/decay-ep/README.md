@@ -1,1 +1,1 @@
-Decay EP
+Decay
