@@ -17,6 +17,19 @@ const albums = [
             "05-empty-the-clip.mp3",
             "06-im-in-love.mp3"
         ]
-    }
+    },
 
+    {
+        name: "Invisible String Theory v1",
+
+        type: "Single",
+
+        folder: "invisible-string-theory-v1-single",
+
+        cover: "cover.png",
+
+        tracks: [
+            "invisible-string-theory-v1.mp3"
+        ]
+    }
 ];
