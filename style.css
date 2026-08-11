@@ -14,8 +14,9 @@
     --red-light: #b20b0b;
 }
 
+
 /* =========================
-RESET
+   RESET
 ========================= */
 
 * {
@@ -51,8 +52,9 @@ input {
     font: inherit;
 }
 
+
 /* =========================
-TOP BAR
+   TOP BAR
 ========================= */
 
 .topbar {
@@ -160,8 +162,9 @@ TOP BAR
         0 0 8px rgba(138, 3, 3, 0.8);
 }
 
+
 /* =========================
-MAIN
+   MAIN
 ========================= */
 
 .site {
@@ -178,8 +181,9 @@ MAIN
     display: block;
 }
 
+
 /* =========================
-GENERAL TYPOGRAPHY
+   GENERAL TYPOGRAPHY
 ========================= */
 
 .eyebrow {
@@ -224,8 +228,9 @@ GENERAL TYPOGRAPHY
     letter-spacing: 1px;
 }
 
+
 /* =========================
-LIBRARY GRID
+   LIBRARY GRID
 ========================= */
 
 .album-grid {
@@ -308,8 +313,9 @@ LIBRARY GRID
     text-transform: uppercase;
 }
 
+
 /* =========================
-ALBUM VIEW
+   ALBUM VIEW
 ========================= */
 
 .back-button {
@@ -410,8 +416,9 @@ ALBUM VIEW
     letter-spacing: 1px;
 }
 
+
 /* =========================
-ACTION BUTTONS
+   ACTION BUTTONS
 ========================= */
 
 .release-actions {
@@ -481,8 +488,9 @@ ACTION BUTTONS
     opacity: 0.5;
 }
 
+
 /* =========================
-TRACK SECTION
+   TRACK SECTION
 ========================= */
 
 .track-section {
@@ -517,6 +525,11 @@ TRACK SECTION
     font-size: 11px;
 }
 
+
+/* =========================
+   TRACK HEADER
+========================= */
+
 .track-header {
     display: grid;
 
@@ -541,16 +554,32 @@ TRACK SECTION
     text-align: right;
 }
 
+
+/* =========================
+   TRACK LIST
+========================= */
+
 .track-list {
     width: 100%;
 }
+
+
+/*
+    IMPORTANT:
+    The original tracklist uses the entire row
+    as the clickable track.
+
+    These rules deliberately restore the original
+    three-column layout while allowing the new
+    copy/download controls to exist inside the row.
+*/
 
 .track {
     width: 100%;
 
     display: grid;
 
-    grid-template-columns: 55px 1fr 90px;
+    grid-template-columns: 55px 1fr auto 90px;
 
     align-items: center;
 
@@ -581,6 +610,9 @@ TRACK SECTION
     background: rgba(138, 3, 3, 0.10);
 }
 
+
+/* Track number */
+
 .track-number {
     color: #555;
 
@@ -593,15 +625,29 @@ TRACK SECTION
     color: var(--red-light);
 }
 
+
+/* Track title */
+
 .track-name {
     font-size: 12px;
 
     font-weight: 400;
+
+    min-width: 0;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
 }
 
 .track.active .track-name {
     color: #e8b0b0;
 }
+
+
+/* Track duration */
 
 .track-duration {
     text-align: right;
@@ -611,10 +657,94 @@ TRACK SECTION
     font-family: "Space Mono", monospace;
 
     font-size: 10px;
+
+    white-space: nowrap;
 }
 
+
 /* =========================
-SEARCH VIEW
+   TRACK ACTIONS
+========================= */
+
+/*
+    These styles are for the new Copy Link
+    and Download Song buttons.
+
+    They stay small and dark so they do not
+    interfere with the original tracklist.
+*/
+
+.track-actions {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 6px;
+
+    margin-left: 12px;
+}
+
+.track-action {
+    width: 28px;
+    height: 28px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    padding: 0;
+
+    background: transparent;
+
+    border: 1px solid var(--line);
+
+    border-radius: 2px;
+
+    color: #777;
+
+    font-size: 11px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        color 0.15s ease,
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.track-action:hover {
+    color: var(--text);
+
+    border-color: #555;
+
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.track-action:active {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+
+/*
+    Prevent action buttons from triggering
+    the visual hover state of the track itself.
+*/
+
+.track-actions button {
+    font-family: "Inter", sans-serif;
+}
+
+
+/* =========================
+   SEARCH VIEW
 ========================= */
 
 .search-page-heading {
@@ -789,8 +919,9 @@ SEARCH VIEW
     font-size: 9px;
 }
 
+
 /* =========================
-EMPTY STATE
+   EMPTY STATE
 ========================= */
 
 .empty-state {
@@ -811,8 +942,9 @@ EMPTY STATE
     display: block;
 }
 
+
 /* =========================
-PLAYER
+   PLAYER
 ========================= */
 
 .player {
@@ -975,8 +1107,9 @@ PLAYER
     text-align: right;
 }
 
+
 /* =========================
-RANGE INPUTS
+   RANGE INPUTS
 ========================= */
 
 .progress,
@@ -1025,8 +1158,9 @@ RANGE INPUTS
     background: var(--red-light);
 }
 
+
 /* =========================
-VOLUME
+   VOLUME
 ========================= */
 
 .player-volume {
@@ -1049,8 +1183,9 @@ VOLUME
     width: 85px;
 }
 
+
 /* =========================
-TABLET
+   TABLET
 ========================= */
 
 @media (max-width: 900px) {
@@ -1070,10 +1205,30 @@ TABLET
 
         padding: 0 18px;
     }
+
+    .track {
+        grid-template-columns:
+            45px
+            1fr
+            auto
+            75px;
+    }
+
+    .track-header {
+        grid-template-columns:
+            45px
+            1fr
+            75px;
+    }
+
+    .track-actions {
+        margin-left: 8px;
+    }
 }
 
+
 /* =========================
-MOBILE
+   MOBILE
 ========================= */
 
 @media (max-width: 700px) {
@@ -1081,6 +1236,7 @@ MOBILE
     body {
         padding-bottom: 122px;
     }
+
 
     .topbar {
         height: 58px;
@@ -1090,29 +1246,35 @@ MOBILE
         grid-template-columns: 1fr auto;
     }
 
+
     .top-nav {
         display: flex;
 
         gap: 18px;
     }
 
+
     .top-status {
         display: none;
     }
+
 
     .site {
         width: calc(100% - 36px);
     }
 
+
     .page-heading {
         padding: 46px 0 28px;
     }
+
 
     .page-heading h1 {
         font-size: 42px;
 
         letter-spacing: -2.5px;
     }
+
 
     .album-grid {
         grid-template-columns:
@@ -1123,13 +1285,16 @@ MOBILE
         padding-top: 30px;
     }
 
+
     .album-card-title {
         font-size: 12px;
     }
 
+
     .album-card-meta {
         font-size: 7px;
     }
+
 
     .release-header {
         grid-template-columns: 1fr;
@@ -1138,6 +1303,7 @@ MOBILE
 
         padding: 30px 0 42px;
     }
+
 
     .cover-wrap {
         width: min(100%, 330px);
@@ -1149,36 +1315,70 @@ MOBILE
         margin: 0 auto;
     }
 
+
     .release-info h1 {
         font-size: 48px;
 
         letter-spacing: -3px;
     }
 
+
     .track-section {
         padding-top: 38px;
     }
 
-    /*
-     * ORIGINAL TRACKLIST MOBILE LAYOUT
-     * Do not add another column here.
-     */
 
-    .track-header,
-    .track {
+    /*
+        Mobile keeps the original tracklist feel.
+        Actions get their own small area without
+        changing the title/duration appearance.
+    */
+
+    .track-header {
         grid-template-columns:
-            42px
+            35px
             1fr
             55px;
     }
 
     .track {
+        grid-template-columns:
+            35px
+            minmax(0, 1fr)
+            auto
+            55px;
+
         min-height: 54px;
+
+        padding: 0 8px;
     }
+
+    .track-name {
+        font-size: 11px;
+    }
+
+    .track-duration {
+        font-size: 9px;
+    }
+
+    .track-actions {
+        gap: 4px;
+
+        margin-left: 5px;
+    }
+
+    .track-action {
+        width: 25px;
+        height: 25px;
+
+        font-size: 10px;
+    }
+
 
     .search-page-heading {
         padding: 70px 0 32px;
     }
+
 
     .search-page-heading h1 {
         font-size: 46px;
@@ -1186,9 +1386,11 @@ MOBILE
         letter-spacing: -3px;
     }
 
+
     .search-box {
         margin-top: 30px;
     }
+
 
     .search-result {
         grid-template-columns:
@@ -1196,6 +1398,7 @@ MOBILE
             1fr
             auto;
     }
+
 
     .player {
         height: 112px;
@@ -1207,6 +1410,7 @@ MOBILE
         padding: 9px 18px;
     }
 
+
     .player-track {
         position: absolute;
 
@@ -1217,15 +1421,18 @@ MOBILE
         max-width: 45%;
     }
 
+
     .player-volume {
         display: none;
     }
+
 
     .player-center {
         width: 100%;
 
         margin-top: 42px;
     }
+
 
     .player-buttons {
         position: absolute;
@@ -1235,13 +1442,15 @@ MOBILE
         top: 17px;
     }
 
+
     .timeline {
         width: 100%;
     }
 }
 
+
 /* =========================
-SMALL PHONES
+   SMALL PHONES
 ========================= */
 
 @media (max-width: 430px) {
@@ -1250,24 +1459,23 @@ SMALL PHONES
         gap: 13px;
     }
 
+
     .nav-link {
         font-size: 10px;
     }
+
 
     .album-grid {
         gap: 26px 12px;
     }
 
+
     .release-info h1 {
         font-size: 40px;
     }
 
-    /*
-     * ORIGINAL SMALL-PHONE TRACKLIST LAYOUT
-     */
 
-    .track-header,
-    .track {
+    .track-header {
         grid-template-columns:
             35px
             1fr
@@ -1277,9 +1485,38 @@ SMALL PHONES
         padding-right: 8px;
     }
 
+
+    .track {
+        grid-template-columns:
+            35px
+            minmax(0, 1fr)
+            auto
+            50px;
+
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+
     .track-name {
         font-size: 11px;
     }
+
+
+    .track-actions {
+        gap: 3px;
+
+        margin-left: 4px;
+    }
+
+
+    .track-action {
+        width: 23px;
+        height: 23px;
+
+        font-size: 9px;
+    }
+
 
     .player-track {
         max-width: 52%;
