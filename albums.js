@@ -20,16 +20,16 @@ const albums = [
     },
 
     {
-        name: "Invisible String Theory v1",
+        name: "Remains (Interclude)",
 
         type: "Single",
 
-        folder: "invisible-string-theory-v1-single",
+        folder: "remains-interclude",
 
         cover: "cover.png",
 
         tracks: [
-            "invisible-string-theory-v1.mp3"
+            "remains-interclude.mp3"
         ]
     }
 ];
