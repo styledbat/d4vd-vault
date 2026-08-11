@@ -1,7 +1,7 @@
 const albums = [
 
     {
-        name: "Decay EP",
+        name: "Decay",
 
         type: "EP",
 
