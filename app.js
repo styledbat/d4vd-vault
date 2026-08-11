@@ -1,1260 +1,361 @@
-/* =========================================================
-   d4vd.vault
-   Main application
-   ========================================================= */
+const audio = document.getElementById("audio");
 
+const libraryView = document.getElementById("library-view");
+const albumView = document.getElementById("album-view");
+const searchView = document.getElementById("search-view");
 
-/* ELEMENTS */
+const albumGrid = document.getElementById("album-grid");
+const libraryTotal = document.getElementById("library-total");
 
-const audio = document.getElementById("audioPlayer");
+const albumCover = document.getElementById("album-cover");
+const albumTitle = document.getElementById("album-title");
+const albumType = document.getElementById("album-type");
+const albumMeta = document.getElementById("album-meta");
+const trackList = document.getElementById("track-list");
 
-const homePage = document.getElementById("homePage");
-const libraryPage = document.getElementById("libraryPage");
-const albumPage = document.getElementById("albumPage");
+const playAlbumButton = document.getElementById("play-album");
+const downloadAlbumButton = document.getElementById("download-album");
 
-const sidebarAlbums = document.getElementById("sidebarAlbums");
-const featuredAlbums = document.getElementById("featuredAlbums");
-const libraryGrid = document.getElementById("libraryGrid");
+const playerCover = document.getElementById("player-cover");
+const nowTitle = document.getElementById("now-title");
 
-const albumCover = document.getElementById("albumCover");
-const albumTitle = document.getElementById("albumTitle");
-const albumType = document.getElementById("albumType");
-const albumTrackCount = document.getElementById("albumTrackCount");
-const albumTracks = document.getElementById("albumTracks");
+const playButton = document.getElementById("play-button");
+const previousButton = document.getElementById("previous-button");
+const nextButton = document.getElementById("next-button");
 
-const albumPlayButton =
-    document.getElementById("albumPlayButton");
+const currentTime = document.getElementById("current-time");
+const totalTime = document.getElementById("total-time");
+const progress = document.getElementById("progress");
 
-const albumDownload =
-    document.getElementById("albumDownload");
+const searchInput = document.getElementById("search-input");
+const searchResults = document.getElementById("search-results");
 
-const shareAlbum =
-    document.getElementById("shareAlbum");
-
-const shareMessage =
-    document.getElementById("shareMessage");
-
-const backToLibrary =
-    document.getElementById("backToLibrary");
-
-const searchInput =
-    document.getElementById("searchInput");
-
-const clearSearch =
-    document.getElementById("clearSearch");
-
-const searchResultsSection =
-    document.getElementById("searchResultsSection");
-
-const searchResults =
-    document.getElementById("searchResults");
-
-const resultCount =
-    document.getElementById("resultCount");
-
-const trackCount =
-    document.getElementById("trackCount");
-
-const libraryCount =
-    document.getElementById("libraryCount");
-
-const playerCover =
-    document.getElementById("playerCover");
-
-const playerTitle =
-    document.getElementById("playerTitle");
-
-const playerArtist =
-    document.getElementById("playerArtist");
-
-const playPauseButton =
-    document.getElementById("playPauseButton");
-
-const previousButton =
-    document.getElementById("previousButton");
-
-const nextButton =
-    document.getElementById("nextButton");
-
-const currentTime =
-    document.getElementById("currentTime");
-
-const duration =
-    document.getElementById("duration");
-
-const progressBar =
-    document.getElementById("progressBar");
-
-const volumeBar =
-    document.getElementById("volumeBar");
-
-
-/* STATE */
-
-let currentAlbum = null;
+let currentAlbumIndex = 0;
 let currentTrackIndex = -1;
 
-let currentPage = "home";
+function getAlbum(index = currentAlbumIndex) {
+    return albums[index];
+}
 
-
-/* =========================================================
-   PATHS
-   ========================================================= */
+function getAlbumCover(album) {
+    return `albums/${album.folder}/${album.cover}`;
+}
 
 function getTrackPath(album, track) {
-
     return `albums/${album.folder}/${track.file}`;
-
 }
 
+function showView(name) {
+    libraryView.classList.remove("active-view");
+    albumView.classList.remove("active-view");
+    searchView.classList.remove("active-view");
 
-function getCoverPath(album) {
+    if (name === "library") {
+        libraryView.classList.add("active-view");
+    }
 
-    return `albums/${album.folder}/${album.cover}`;
+    if (name === "album") {
+        albumView.classList.add("active-view");
+    }
 
+    if (name === "search") {
+        searchView.classList.add("active-view");
+    }
 }
 
-
-/* =========================================================
-   TIME
-   ========================================================= */
-
-function formatTime(seconds) {
-
-    if (!Number.isFinite(seconds)) {
-        return "0:00";
-    }
-
-    const minutes =
-        Math.floor(seconds / 60);
-
-    const remaining =
-        Math.floor(seconds % 60)
-            .toString()
-            .padStart(2, "0");
-
-    return `${minutes}:${remaining}`;
-
+function updateAlbumURL(album) {
+    const url = new URL(window.location);
+    url.searchParams.set("album", album.id);
+    history.pushState({}, "", url);
 }
-
-
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-
-function showPage(page) {
-
-    currentPage = page;
-
-    homePage.classList.remove("active-page");
-    libraryPage.classList.remove("active-page");
-    albumPage.classList.remove("active-page");
-
-    if (page === "home") {
-
-        homePage.classList.add("active-page");
-
-    }
-
-    if (page === "library") {
-
-        libraryPage.classList.add("active-page");
-
-    }
-
-    if (page === "album") {
-
-        albumPage.classList.add("active-page");
-
-    }
-
-    document
-        .querySelectorAll("[data-page]")
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.page === page
-            );
-
-        });
-
-    window.scrollTo({
-        top: 0,
-        behavior: "instant"
-    });
-
-}
-
-
-/* =========================================================
-   URL ROUTING
-   ========================================================= */
-
-function getAlbumFromURL() {
-
-    const params =
-        new URLSearchParams(window.location.search);
-
-    const albumID =
-        params.get("album");
-
-    if (!albumID) {
-        return null;
-    }
-
-    return albums.find(
-        album => album.id === albumID
-    ) || null;
-
-}
-
-
-function openAlbum(album, updateURL = true) {
-
-    if (!album) {
-        return;
-    }
-
-    currentAlbum = album;
-
-    renderAlbum(album);
-
-    showPage("album");
-
-    if (updateURL) {
-
-        const url =
-            new URL(window.location.href);
-
-        url.searchParams.set(
-            "album",
-            album.id
-        );
-
-        history.pushState(
-            { album: album.id },
-            "",
-            url
-        );
-
-    }
-
-}
-
-
-function goHome(updateURL = true) {
-
-    showPage("home");
-
-    if (updateURL) {
-
-        const url =
-            new URL(window.location.href);
-
-        url.searchParams.delete("album");
-
-        history.pushState(
-            {},
-            "",
-            url
-        );
-
-    }
-
-}
-
-
-function goLibrary(updateURL = true) {
-
-    showPage("library");
-
-    if (updateURL) {
-
-        const url =
-            new URL(window.location.href);
-
-        url.searchParams.delete("album");
-
-        history.pushState(
-            {},
-            "",
-            url
-        );
-
-    }
-
-}
-
-
-/* Browser back/forward */
-
-window.addEventListener("popstate", () => {
-
-    const album =
-        getAlbumFromURL();
-
-    if (album) {
-
-        openAlbum(
-            album,
-            false
-        );
-
-    } else {
-
-        goHome(false);
-
-    }
-
-});
-
-
-/* =========================================================
-   ALBUM CARDS
-   ========================================================= */
-
-function createAlbumCard(album) {
-
-    const card =
-        document.createElement("a");
-
-    card.className = "album-card";
-
-    card.href =
-        `?album=${encodeURIComponent(album.id)}`;
-
-    card.innerHTML = `
-
-        <img
-            class="album-card-cover"
-            src="${getCoverPath(album)}"
-            alt="${escapeHTML(album.name)} cover"
-            loading="lazy"
-        >
-
-        <div class="album-card-info">
-
-            <div class="album-card-title">
-                ${escapeHTML(album.name)}
-            </div>
-
-            <div class="album-card-type">
-                ${escapeHTML(album.type)}
-                ·
-                ${album.tracks.length} TRACKS
-            </div>
-
-        </div>
-    `;
-
-    card.addEventListener("click", event => {
-
-        event.preventDefault();
-
-        openAlbum(album);
-
-    });
-
-    return card;
-
-}
-
-
-/* =========================================================
-   RENDER LIBRARY
-   ========================================================= */
 
 function renderLibrary() {
+    albumGrid.innerHTML = "";
 
-    libraryGrid.innerHTML = "";
+    libraryTotal.textContent =
+        `${albums.length.toString().padStart(2, "0")} RELEASES`;
 
-    albums.forEach(album => {
+    albums.forEach((album, index) => {
 
-        libraryGrid.appendChild(
-            createAlbumCard(album)
-        );
+        const card = document.createElement("button");
 
+        card.className = "album-card";
+
+        card.innerHTML = `
+            <div class="album-card-cover">
+                <img src="${getAlbumCover(album)}" alt="${album.name}">
+            </div>
+            <div class="album-card-title">${album.name}</div>
+            <div class="album-card-meta">${album.type}</div>
+        `;
+
+        card.addEventListener("click", () => openAlbum(index));
+
+        albumGrid.appendChild(card);
     });
-
-    libraryCount.textContent =
-        `${albums.length} RELEASE${albums.length === 1 ? "" : "S"}`;
-
 }
 
+function openAlbum(index) {
+    currentAlbumIndex = index;
+    currentTrackIndex = -1;
 
-/* =========================================================
-   SIDEBAR
-   ========================================================= */
+    const album = getAlbum();
 
-function renderSidebar() {
+    updateAlbumURL(album);
 
-    sidebarAlbums.innerHTML = "";
+    albumCover.src = getAlbumCover(album);
+    albumTitle.textContent = album.name;
+    albumType.textContent = album.type;
+    albumMeta.textContent = `${album.tracks.length} TRACKS`;
 
-    albums.forEach(album => {
+    renderTracks();
 
-        const button =
-            document.createElement("a");
-
-        button.className =
-            "sidebar-album";
-
-        button.textContent =
-            album.name;
-
-        button.href =
-            `?album=${encodeURIComponent(album.id)}`;
-
-        button.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-
-                openAlbum(album);
-
-            }
-        );
-
-        sidebarAlbums.appendChild(button);
-
-    });
-
+    showView("album");
 }
 
+function renderTracks() {
+    const album = getAlbum();
 
-/* =========================================================
-   HOME
-   ========================================================= */
+    trackList.innerHTML = "";
 
-function renderHome() {
+    album.tracks.forEach((track, index) => {
 
-    const totalTracks =
-        albums.reduce(
-            (total, album) =>
-                total + album.tracks.length,
-            0
-        );
+        const button = document.createElement("button");
 
-    trackCount.textContent =
-        `${totalTracks} TRACK${totalTracks === 1 ? "" : "S"}`;
+        button.className = "track";
 
-    featuredAlbums.innerHTML = "";
+        button.innerHTML = `
+            <span class="track-number">${String(index + 1).padStart(2, "0")}</span>
+            <span class="track-name">${track.title}</span>
+            <span class="track-duration">--:--</span>
+        `;
 
-    albums
-        .slice(0, 6)
-        .forEach(album => {
-
-            featuredAlbums.appendChild(
-                createAlbumCard(album)
-            );
-
+        button.addEventListener("click", () => {
+            loadTrack(index);
+            playTrack();
         });
 
+        trackList.appendChild(button);
+    });
 }
 
-
-/* =========================================================
-   ALBUM PAGE
-   ========================================================= */
-
-function renderAlbum(album) {
-
-    albumCover.src =
-        getCoverPath(album);
-
-    albumCover.alt =
-        `${album.name} cover`;
-
-    albumTitle.textContent =
-        album.name;
-
-    albumType.textContent =
-        album.type;
-
-    albumTrackCount.textContent =
-        `${album.tracks.length} tracks`;
-
-    shareMessage.textContent = "";
-
-    albumDownload.href =
-        createAlbumDownloadURL(album);
-
-    albumDownload.download =
-        `${album.id}.txt`;
-
-    albumTracks.innerHTML = "";
-
-    album.tracks.forEach(
-        (track, index) => {
-
-            const row =
-                document.createElement("div");
-
-            row.className =
-                "track-row";
-
-            row.dataset.index =
-                index;
-
-            row.innerHTML = `
-
-                <div class="track-number">
-                    ${String(index + 1).padStart(2, "0")}
-                </div>
-
-                <div class="track-main">
-
-                    <div class="track-title">
-                        ${escapeHTML(track.title)}
-                    </div>
-
-                    <div class="track-file">
-                        ${escapeHTML(track.file)}
-                    </div>
-
-                </div>
-
-                <div class="track-status">
-                    ${escapeHTML(track.status || "")}
-                </div>
-
-                <div class="track-time">
-                    --
-                </div>
-
-            `;
-
-            row.addEventListener(
-                "click",
-                () => {
-
-                    playTrack(
-                        album,
-                        index
-                    );
-
-                }
-            );
-
-            albumTracks.appendChild(row);
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   PLAYBACK
-   ========================================================= */
-
-function playTrack(album, index) {
-
-    if (
-        !album ||
-        !album.tracks[index]
-    ) {
-        return;
-    }
-
-    currentAlbum = album;
+function loadTrack(index) {
+    const album = getAlbum();
+    const track = album.tracks[index];
 
     currentTrackIndex = index;
 
-    const track =
-        album.tracks[index];
+    audio.src = getTrackPath(album, track);
 
-    audio.src =
-        getTrackPath(
-            album,
-            track
-        );
+    nowTitle.textContent = track.title;
+
+    playerCover.src = getAlbumCover(album);
 
     audio.load();
-
-    audio.play()
-        .then(() => {
-
-            updatePlayer();
-
-        })
-        .catch(() => {
-
-            updatePlayer();
-
-        });
-
-    updatePlayer();
-
-    highlightPlayingTrack();
-
 }
 
-
-function updatePlayer() {
-
-    if (
-        !currentAlbum ||
-        currentTrackIndex < 0
-    ) {
-        playerTitle.textContent =
-            "Nothing playing";
-
-        playerArtist.textContent =
-            "d4vd";
-
-        return;
-    }
-
-    const track =
-        currentAlbum.tracks[
-            currentTrackIndex
-        ];
-
-    playerTitle.textContent =
-        track.title;
-
-    playerArtist.textContent =
-        `d4vd · ${currentAlbum.name}`;
-
-    playerCover.src =
-        getCoverPath(currentAlbum);
-
-    playPauseButton.textContent =
-        audio.paused
-            ? "▶"
-            : "Ⅱ";
-
-    highlightPlayingTrack();
-
+function playTrack() {
+    audio.play();
+    playButton.textContent = "PAUSE";
 }
 
+function pauseTrack() {
+    audio.pause();
+    playButton.textContent = "PLAY";
+}
 
 function togglePlay() {
 
     if (!audio.src) {
-
-        if (
-            currentAlbum &&
-            currentAlbum.tracks.length
-        ) {
-
-            playTrack(
-                currentAlbum,
-                0
-            );
-
-        }
-
+        loadTrack(0);
+        playTrack();
         return;
-
     }
 
     if (audio.paused) {
-
-        audio.play();
-
+        playTrack();
     } else {
-
-        audio.pause();
-
+        pauseTrack();
     }
-
-    updatePlayer();
-
 }
 
+function nextTrack() {
+    const album = getAlbum();
 
-function playNext() {
-
-    if (!currentAlbum) {
-        return;
+    if (currentTrackIndex < album.tracks.length - 1) {
+        loadTrack(currentTrackIndex + 1);
+    } else {
+        loadTrack(0);
     }
 
-    let nextIndex =
-        currentTrackIndex + 1;
-
-    if (
-        nextIndex >=
-        currentAlbum.tracks.length
-    ) {
-
-        nextIndex = 0;
-
-    }
-
-    playTrack(
-        currentAlbum,
-        nextIndex
-    );
-
+    playTrack();
 }
 
+function previousTrack() {
+    const album = getAlbum();
 
-function playPrevious() {
-
-    if (!currentAlbum) {
-        return;
+    if (currentTrackIndex > 0) {
+        loadTrack(currentTrackIndex - 1);
+    } else {
+        loadTrack(album.tracks.length - 1);
     }
 
-    let previousIndex =
-        currentTrackIndex - 1;
-
-    if (previousIndex < 0) {
-
-        previousIndex =
-            currentAlbum.tracks.length - 1;
-
-    }
-
-    playTrack(
-        currentAlbum,
-        previousIndex
-    );
-
+    playTrack();
 }
 
+function updateProgress() {
 
-/* Automatically continue */
+    if (!audio.duration) return;
 
-audio.addEventListener(
-    "ended",
-    playNext
-);
+    progress.value = (audio.currentTime / audio.duration) * 100;
 
+    currentTime.textContent = formatTime(audio.currentTime);
 
-/* Update player */
-
-audio.addEventListener(
-    "play",
-    updatePlayer
-);
-
-audio.addEventListener(
-    "pause",
-    updatePlayer
-);
-
-
-/* =========================================================
-   HIGHLIGHT PLAYING TRACK
-   ========================================================= */
-
-function highlightPlayingTrack() {
-
-    document
-        .querySelectorAll(".track-row")
-        .forEach(row => {
-
-            const rowIndex =
-                Number(row.dataset.index);
-
-            const isPlaying =
-                rowIndex === currentTrackIndex &&
-                currentAlbum &&
-                row.closest(".album-tracks");
-
-            row.classList.toggle(
-                "playing",
-                Boolean(
-                    isPlaying &&
-                    !audio.paused
-                )
-            );
-
-        });
-
+    totalTime.textContent = formatTime(audio.duration);
 }
 
+function formatTime(seconds) {
 
-/* =========================================================
-   PROGRESS
-   ========================================================= */
+    const minutes = Math.floor(seconds / 60);
 
-audio.addEventListener(
-    "loadedmetadata",
-    () => {
+    const secs = Math.floor(seconds % 60)
+        .toString()
+        .padStart(2, "0");
 
-        duration.textContent =
-            formatTime(audio.duration);
-
-    }
-);
-
-
-audio.addEventListener(
-    "timeupdate",
-    () => {
-
-        currentTime.textContent =
-            formatTime(audio.currentTime);
-
-        if (
-            audio.duration &&
-            Number.isFinite(audio.duration)
-        ) {
-
-            progressBar.value =
-                (
-                    audio.currentTime /
-                    audio.duration
-                ) * 100;
-
-        }
-
-    }
-);
-
-
-progressBar.addEventListener(
-    "input",
-    () => {
-
-        if (!audio.duration) {
-            return;
-        }
-
-        audio.currentTime =
-            (
-                Number(progressBar.value) /
-                100
-            ) * audio.duration;
-
-    }
-);
-
-
-/* Volume */
-
-volumeBar.addEventListener(
-    "input",
-    () => {
-
-        audio.volume =
-            Number(volumeBar.value);
-
-    }
-);
-
-
-/* =========================================================
-   SEARCH
-   ========================================================= */
-
-function getAllTracks() {
-
-    const results = [];
-
-    albums.forEach(album => {
-
-        album.tracks.forEach(
-            (track, index) => {
-
-                results.push({
-
-                    album,
-
-                    track,
-
-                    index
-
-                });
-
-            }
-        );
-
-    });
-
-    return results;
-
+    return `${minutes}:${secs}`;
 }
 
+async function downloadAlbum() {
 
-function searchVault(query) {
+    const album = getAlbum();
 
-    const search =
-        query
-            .trim()
-            .toLowerCase();
+    if (!album) return;
 
-    if (!search) {
+    const zip = new JSZip();
 
-        searchResultsSection
-            .classList.add("hidden");
+    for (const track of album.tracks) {
 
-        return;
+        const response = await fetch(getTrackPath(album, track));
 
+        const data = await response.arrayBuffer();
+
+        zip.file(track.file, data);
     }
 
-    const matches =
-        getAllTracks()
-            .filter(item => {
+    const blob = await zip.generateAsync({ type: "blob" });
 
-                return (
-                    item.track.title
-                        .toLowerCase()
-                        .includes(search)
-                    ||
-                    item.album.name
-                        .toLowerCase()
-                        .includes(search)
-                    ||
-                    item.track.file
-                        .toLowerCase()
-                        .includes(search)
-                );
+    const url = URL.createObjectURL(blob);
 
-            });
+    const link = document.createElement("a");
 
-    searchResultsSection
-        .classList.remove("hidden");
+    link.href = url;
+    link.download = `${album.name}.zip`;
 
-    resultCount.textContent =
-        `${matches.length} RESULT${matches.length === 1 ? "" : "S"}`;
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    URL.revokeObjectURL(url);
+}
+
+function renderSearchResults() {
+
+    const query = searchInput.value.toLowerCase().trim();
 
     searchResults.innerHTML = "";
 
-    matches.forEach(item => {
+    if (!query) return;
 
-        const row =
-            document.createElement("div");
+    albums.forEach((album, albumIndex) => {
 
-        row.className =
-            "track-row search-result";
+        album.tracks.forEach((track, trackIndex) => {
 
-        row.innerHTML = `
+            if (
+                track.title.toLowerCase().includes(query) ||
+                album.name.toLowerCase().includes(query)
+            ) {
 
-            <div class="track-number">
-                ${String(item.index + 1).padStart(2, "0")}
-            </div>
+                const button = document.createElement("button");
 
-            <div class="track-main">
+                button.className = "search-result";
 
-                <div class="track-title">
-                    ${escapeHTML(item.track.title)}
-                </div>
+                button.innerHTML = `
+                    <span class="search-result-title">${track.title}</span>
+                    <span class="search-result-album">${album.name}</span>
+                `;
 
-                <div class="track-file">
-                    ${escapeHTML(item.album.name)}
-                </div>
+                button.addEventListener("click", () => {
+                    openAlbum(albumIndex);
+                    loadTrack(trackIndex);
+                    playTrack();
+                });
 
-            </div>
-
-            <div class="track-status">
-                ${escapeHTML(item.track.status || "")}
-            </div>
-
-            <div class="track-time">
-                --
-            </div>
-
-        `;
-
-        row.addEventListener(
-            "click",
-            () => {
-
-                playTrack(
-                    item.album,
-                    item.index
-                );
-
+                searchResults.appendChild(button);
             }
-        );
-
-        searchResults.appendChild(row);
-
+        });
     });
-
 }
 
+document.getElementById("library-button")
+    .addEventListener("click", () => showView("library"));
 
-/* =========================================================
-   DOWNLOAD
-   =========================================================
+document.getElementById("search-button")
+    .addEventListener("click", () => showView("search"));
 
-   Browsers cannot reliably create a single ZIP from
-   multiple MP3 files without either:
+document.getElementById("brand-button")
+    .addEventListener("click", () => showView("library"));
 
-   - a server-side ZIP
-   - a ZIP library
-   - or downloading each file individually.
+document.getElementById("back-to-library")
+    .addEventListener("click", () => showView("library"));
 
-   For now this button downloads a text manifest containing
-   the album's tracks and their direct URLs.
+playAlbumButton.addEventListener("click", () => {
 
-   You can replace this later with a real ZIP system.
-   ========================================================= */
-
-function createAlbumDownloadURL(album) {
-
-    const lines = [
-
-        `d4vd.vault — ${album.name}`,
-
-        "",
-
-        `Artist: d4vd`,
-
-        `Type: ${album.type}`,
-
-        "",
-
-        "TRACKS",
-
-        ...album.tracks.map(
-            (track, index) =>
-                `${String(index + 1).padStart(2, "0")} — ${track.title} — ${getTrackPath(album, track)}`
-        )
-
-    ];
-
-    const blob =
-        new Blob(
-            [lines.join("\n")],
-            {
-                type: "text/plain"
-            }
-        );
-
-    return URL.createObjectURL(blob);
-
-}
-
-
-/* =========================================================
-   SHARE
-   ========================================================= */
-
-async function shareCurrentAlbum() {
-
-    if (!currentAlbum) {
-        return;
+    if (currentTrackIndex === -1) {
+        loadTrack(0);
     }
 
-    const url =
-        new URL(
-            window.location.href
-        );
+    playTrack();
+});
 
-    url.searchParams.set(
-        "album",
-        currentAlbum.id
-    );
+downloadAlbumButton.addEventListener("click", downloadAlbum);
 
-    const shareURL =
-        url.toString();
+playButton.addEventListener("click", togglePlay);
 
-    try {
+previousButton.addEventListener("click", previousTrack);
 
-        if (
-            navigator.share
-        ) {
+nextButton.addEventListener("click", nextTrack);
 
-            await navigator.share({
+audio.addEventListener("ended", nextTrack);
 
-                title:
-                    `${currentAlbum.name} — d4vd.vault`,
+audio.addEventListener("timeupdate", updateProgress);
 
-                text:
-                    `d4vd.vault — ${currentAlbum.name}`,
+progress.addEventListener("input", () => {
 
-                url:
-                    shareURL
+    if (!audio.duration) return;
 
-            });
+    audio.currentTime = (progress.value / 100) * audio.duration;
+});
 
-            shareMessage.textContent =
-                "SHARE MENU OPENED";
+searchInput.addEventListener("input", renderSearchResults);
 
-            return;
+renderLibrary();
 
-        }
+const params = new URLSearchParams(window.location.search);
+const albumId = params.get("album");
 
-        await navigator.clipboard.writeText(
-            shareURL
-        );
+if (albumId) {
 
-        shareMessage.textContent =
-            "ALBUM LINK COPIED";
+    const index = albums.findIndex(album => album.id === albumId);
 
-    } catch (error) {
-
-        shareMessage.textContent =
-            "LINK READY — COPY IT FROM THE ADDRESS BAR";
-
-    }
-
-}
-
-
-/* =========================================================
-   EVENT LISTENERS
-   ========================================================= */
-
-playPauseButton.addEventListener(
-    "click",
-    togglePlay
-);
-
-nextButton.addEventListener(
-    "click",
-    playNext
-);
-
-previousButton.addEventListener(
-    "click",
-    playPrevious
-);
-
-albumPlayButton.addEventListener(
-    "click",
-    () => {
-
-        if (!currentAlbum) {
-            return;
-        }
-
-        playTrack(
-            currentAlbum,
-            0
-        );
-
-    }
-);
-
-shareAlbum.addEventListener(
-    "click",
-    shareCurrentAlbum
-);
-
-backToLibrary.addEventListener(
-    "click",
-    () => {
-
-        goLibrary();
-
-    }
-);
-
-
-/* Search */
-
-searchInput.addEventListener(
-    "input",
-    () => {
-
-        const value =
-            searchInput.value;
-
-        clearSearch.classList.toggle(
-            "visible",
-            value.length > 0
-        );
-
-        searchVault(value);
-
-    }
-);
-
-clearSearch.addEventListener(
-    "click",
-    () => {
-
-        searchInput.value = "";
-
-        clearSearch.classList.remove(
-            "visible"
-        );
-
-        searchResultsSection
-            .classList.add("hidden");
-
-        searchInput.focus();
-
-    }
-);
-
-
-/* Navigation buttons */
-
-document
-    .querySelectorAll("[data-page]")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            event => {
-
-                const page =
-                    event.currentTarget.dataset.page;
-
-                if (page === "home") {
-
-                    goHome();
-
-                }
-
-                if (page === "library") {
-
-                    goLibrary();
-
-                }
-
-            }
-        );
-
-    });
-
-
-/* =========================================================
-   SECURITY / HTML ESCAPING
-   ========================================================= */
-
-function escapeHTML(value) {
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-}
-
-
-/* =========================================================
-   INITIALIZE
-   ========================================================= */
-
-function initialize() {
-
-    renderSidebar();
-
-    renderHome();
-
-    renderLibrary();
-
-    const album =
-        getAlbumFromURL();
-
-    if (album) {
-
-        openAlbum(
-            album,
-            false
-        );
-
+    if (index !== -1) {
+        openAlbum(index);
     } else {
-
-        showPage("home");
-
+        showView("library");
     }
 
+} else {
+
+    showView("library");
 }
-
-
-/* START */
-
-initialize();
