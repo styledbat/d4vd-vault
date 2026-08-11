@@ -482,34 +482,6 @@ ACTION BUTTONS
 }
 
 /* =========================
-COPY LINK BUTTON
-========================= */
-
-.copy-link-button {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 8px;
-
-    white-space: nowrap;
-}
-
-.copy-link-button.copied {
-    color: #d8d8d8;
-
-    border-color: #555;
-}
-
-.copy-link-button.error {
-    color: #d08b8b;
-
-    border-color: rgba(178, 11, 11, 0.5);
-}
-
-/* =========================
 TRACK SECTION
 ========================= */
 
@@ -548,7 +520,7 @@ TRACK SECTION
 .track-header {
     display: grid;
 
-    grid-template-columns: 55px 1fr 90px 42px;
+    grid-template-columns: 55px 1fr 90px;
 
     padding: 0 14px 12px;
 
@@ -578,7 +550,7 @@ TRACK SECTION
 
     display: grid;
 
-    grid-template-columns: 55px 1fr 90px 42px;
+    grid-template-columns: 55px 1fr 90px;
 
     align-items: center;
 
@@ -639,84 +611,6 @@ TRACK SECTION
     font-family: "Space Mono", monospace;
 
     font-size: 10px;
-}
-
-/* =========================
-TRACK DOWNLOAD
-========================= */
-
-.track-download {
-    width: 30px;
-    height: 30px;
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    margin-left: auto;
-
-    padding: 0;
-
-    background: transparent;
-
-    border: 1px solid transparent;
-
-    border-radius: 2px;
-
-    color: #555;
-
-    font-family: "Space Mono", monospace;
-
-    font-size: 12px;
-
-    line-height: 1;
-
-    cursor: pointer;
-
-    opacity: 0;
-
-    transition:
-        opacity 0.2s ease,
-        color 0.2s ease,
-        border-color 0.2s ease,
-        background 0.2s ease;
-}
-
-.track:hover .track-download,
-.track:focus-within .track-download {
-    opacity: 1;
-}
-
-.track-download:hover {
-    color: var(--text);
-
-    border-color: var(--line-light);
-
-    background: rgba(255, 255, 255, 0.035);
-}
-
-.track-download:active {
-    background: rgba(255, 255, 255, 0.07);
-}
-
-.track-download:disabled {
-    cursor: wait;
-
-    opacity: 0.35;
-}
-
-.track-download.downloading {
-    color: var(--red-light);
-
-    border-color: rgba(138, 3, 3, 0.4);
-}
-
-.track-download.downloaded {
-    color: #b8b8b8;
-
-    border-color: #444;
 }
 
 /* =========================
@@ -1265,24 +1159,21 @@ MOBILE
         padding-top: 38px;
     }
 
+    /*
+     * ORIGINAL TRACKLIST MOBILE LAYOUT
+     * Do not add another column here.
+     */
+
     .track-header,
     .track {
         grid-template-columns:
             42px
             1fr
-            55px
-            34px;
+            55px;
     }
 
     .track {
         min-height: 54px;
-    }
-
-    .track-download {
-        opacity: 1;
-
-        width: 28px;
-        height: 28px;
     }
 
     .search-page-heading {
@@ -1371,30 +1262,22 @@ SMALL PHONES
         font-size: 40px;
     }
 
+    /*
+     * ORIGINAL SMALL-PHONE TRACKLIST LAYOUT
+     */
+
     .track-header,
     .track {
         grid-template-columns:
             35px
             1fr
-            50px
-            32px;
+            50px;
 
         padding-left: 8px;
         padding-right: 8px;
     }
 
     .track-name {
-        font-size: 11px;
-    }
-
-    .track-duration {
-        font-size: 9px;
-    }
-
-    .track-download {
-        width: 26px;
-        height: 26px;
-
         font-size: 11px;
     }
 
