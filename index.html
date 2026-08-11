@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
@@ -19,7 +22,11 @@
 
     <title>d4vd.vault</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
     <link
         rel="preconnect"
         href="https://fonts.gstatic.com"
@@ -35,9 +42,12 @@
         rel="stylesheet"
         href="style.css"
     >
+
 </head>
 
+
 <body>
+
 
     <!-- =========================
          TOP NAVIGATION
@@ -53,6 +63,7 @@
             d4vd.vault
         </button>
 
+
         <nav class="top-nav">
 
             <button
@@ -62,6 +73,7 @@
             >
                 Library
             </button>
+
 
             <button
                 class="nav-link"
@@ -73,12 +85,17 @@
 
         </nav>
 
+
         <div class="top-status">
+
             <span class="status-dot"></span>
+
             PRIVATE ARCHIVE
+
         </div>
 
     </header>
+
 
 
     <!-- =========================
@@ -100,6 +117,7 @@
             <div class="page-heading">
 
                 <div>
+
                     <p class="eyebrow">
                         d4vd.vault
                     </p>
@@ -107,7 +125,9 @@
                     <h1>
                         Library
                     </h1>
+
                 </div>
+
 
                 <p
                     class="library-total"
@@ -133,6 +153,7 @@
             </div>
 
         </section>
+
 
 
         <!-- =========================
@@ -176,9 +197,11 @@
                         EP / ARCHIVE
                     </p>
 
+
                     <h1 id="album-title">
                         —
                     </h1>
+
 
                     <p
                         class="release-meta"
@@ -199,6 +222,7 @@
                             Play
                         </button>
 
+
                         <button
                             class="secondary-button"
                             id="shuffle-button"
@@ -206,6 +230,7 @@
                         >
                             Shuffle
                         </button>
+
 
                         <button
                             class="secondary-button"
@@ -222,11 +247,13 @@
             </section>
 
 
+
             <section class="track-section">
 
                 <div class="section-heading">
 
                     <div>
+
                         <p class="eyebrow">
                             TRACKLIST
                         </p>
@@ -234,7 +261,9 @@
                         <h2 id="tracklist-title">
                             —
                         </h2>
+
                     </div>
+
 
                     <p
                         class="track-count"
@@ -275,6 +304,7 @@
         </section>
 
 
+
         <!-- =========================
              SEARCH VIEW
         ========================== -->
@@ -307,12 +337,14 @@
                     /
                 </span>
 
+
                 <input
                     id="search-input"
                     type="search"
                     placeholder="Search tracks or releases..."
                     autocomplete="off"
                 >
+
 
                 <button
                     id="clear-search"
@@ -345,6 +377,7 @@
     </main>
 
 
+
     <!-- =========================
          BOTTOM PLAYER
     ========================== -->
@@ -360,6 +393,7 @@
                 alt=""
             >
 
+
             <div class="player-track-info">
 
                 <span
@@ -368,6 +402,7 @@
                 >
                     Select a track
                 </span>
+
 
                 <span
                     id="now-artist"
@@ -379,6 +414,7 @@
             </div>
 
         </div>
+
 
 
         <div class="player-center">
@@ -394,6 +430,7 @@
                     ‹‹
                 </button>
 
+
                 <button
                     id="play-button"
                     class="play-button"
@@ -402,6 +439,7 @@
                 >
                     ▶
                 </button>
+
 
                 <button
                     id="next-button"
@@ -421,6 +459,7 @@
                     0:00
                 </span>
 
+
                 <input
                     id="progress"
                     class="progress"
@@ -432,6 +471,7 @@
                     aria-label="Track progress"
                 >
 
+
                 <span id="total-time">
                     0:00
                 </span>
@@ -441,11 +481,13 @@
         </div>
 
 
+
         <div class="player-volume">
 
             <span>
                 VOL
             </span>
+
 
             <input
                 id="volume"
@@ -463,6 +505,7 @@
     </footer>
 
 
+
     <!-- AUDIO -->
 
     <audio
@@ -471,17 +514,22 @@
     ></audio>
 
 
+
     <!-- ZIP LIBRARY -->
 
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
 
     <!-- YOUR DATA -->
 
     <script src="albums.js"></script>
 
+
     <!-- SITE LOGIC -->
 
     <script src="app.js"></script>
 
+
 </body>
+
 </html>
