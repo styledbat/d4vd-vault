@@ -19,6 +19,20 @@ const albums = [
         ]
     },
 
+     {
+        name: "Party",
+
+        type: "Single",
+
+        folder: "party-single",
+
+        cover: "cover.png",
+
+        tracks: [
+            "Party.mp3"
+        ]
+    },
+    
     {
         name: "Remains (Interclude)",
 
