@@ -32,6 +32,20 @@ const albums = [
             "Party.mp3"
         ]
     },
+
+     {
+        name: "Jesus, I",
+
+        type: "Single",
+
+        folder: "jesus-i",
+
+        cover: "cover.png",
+
+        tracks: [
+            "jesus-i.mp3"
+        ]
+    },
     
     {
         name: "Remains (Interclude)",
