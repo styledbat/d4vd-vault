@@ -46,18 +46,32 @@ const albums = [
             "jesus-i.mp3"
         ]
     },
-    
-    {
-        name: "Remains (Interclude)",
+
+     {
+        name: "Jesus, I",
 
         type: "Single",
 
-        folder: "remains-interclude",
+        folder: "jesus-i",
 
         cover: "cover.png",
 
         tracks: [
-            "remains-interclude.mp3"
+            "jesus-i.mp3"
+        ]
+    },
+    
+    {
+        name: "New Seats",
+
+        type: "Single",
+
+        folder: "new-seats",
+
+        cover: "cover.png",
+
+        tracks: [
+            "new-seats.mp3"
         ]
     }
 ];
