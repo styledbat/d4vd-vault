@@ -48,6 +48,20 @@ const albums = [
     },
 
      {
+        name: "You've Been In My Head",
+
+        type: "Single",
+
+        folder: "youve-been-in-my-head",
+
+        cover: "cover.png",
+
+        tracks: [
+            "youve-been-in-my-head.mp3"
+        ]
+    },
+
+     {
         name: "Remains (Interclude)",
 
         type: "Single",
@@ -60,6 +74,7 @@ const albums = [
             "remains-interclude.mp3"
         ]
     },
+    
     
     {
         name: "New Seats",
