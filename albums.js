@@ -34,6 +34,20 @@ const albums = [
     },
 
      {
+        name: "Raining Inside",
+
+        type: "Single",
+
+        folder: "raining-inside",
+
+        cover: "cover.png",
+
+        tracks: [
+            "raining-inside.mp3"
+        ]
+    },
+
+     {
         name: "Jesus, I",
 
         type: "Single",
