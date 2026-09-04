@@ -20,6 +20,20 @@ const albums = [
     },
 
      {
+        name: "Forever In Love",
+
+        type: "Single",
+
+        folder: "forever-in-love",
+
+        cover: "cover.png",
+
+        tracks: [
+            "forever-in-love.mp3"
+        ]
+    },
+
+     {
         name: "Party",
 
         type: "Single",
