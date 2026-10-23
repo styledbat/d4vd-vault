@@ -1,542 +1,202 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="theme-color"
-        content="#080808"
-    >
-
-    <meta
-        name="description"
-        content="d4vd.vault — private music archive"
-    >
-
-    <title>d4vd.vault</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap"
-        rel="stylesheet"
-    >
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#11110f">
+<meta name="description" content="d4vd.vault is a fan-made archive of listed releases and tracks.">
+<title>d4vd.vault — Music archive</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2311110f'/%3E%3Cpath d='M14 14h36v36H14z' fill='%23c9ff55'/%3E%3Ctext x='32' y='40' font-size='24' font-family='monospace' text-anchor='middle' fill='%2311110f'%3Ev.%3C/text%3E%3C/svg%3E">
+<style>
+:root {
+ --site-primary:#c9ff55;
+ --site-secondary:#252820;
+ --site-background:#11110f;
+ --site-on-primary:#11110f;
+ --site-on-secondary:#f3f2ec;
+ --site-on-background:#f3f2ec;
+ --site-font-body:Arial, Helvetica, sans-serif;
+ --site-font-heading:Arial, Helvetica, sans-serif;
+ --site-heading-scale:1;
+ --site-spacing-scale:1;
+ --site-radius-scale:1;
+ --site-decoration-opacity:1;
+ --bg:var(--site-background); --surface:#191a16; --surface2:#20211c; --line:#34352e;
+ --text:var(--site-on-background); --muted:#a1a297; --acid:var(--site-primary);
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--site-font-body);-webkit-font-smoothing:antialiased}
+button,input{font:inherit}
+button,a{ -webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--acid);outline-offset:3px}
+a{color:inherit}
+#app{min-height:100vh;background-color:var(--bg);border-radius:0;padding-bottom:108px}
+.topbar{height:76px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,5vw,76px);gap:24px}
+.brand{border:0;background:none;color:var(--text);font-weight:800;letter-spacing:-1.1px;font-size:18px;cursor:pointer}
+.brand span{color:var(--acid)}
+nav{display:flex;align-items:center;gap:26px}
+.nav-link{background:none;border:0;color:var(--muted);padding:10px 0;font-size:12px;cursor:pointer;text-decoration:none}
+.nav-link.active,.nav-link:hover{color:var(--text)}
+.nav-link.active{box-shadow:inset 0 -2px var(--acid)}
+.status{font:10px ui-monospace,monospace;color:var(--muted);letter-spacing:1.2px;white-space:nowrap}
+.status:before{content:"";display:inline-block;width:7px;height:7px;background:var(--acid);border-radius:50%;margin-right:9px}
+main{width:min(1240px,calc(100% - 48px));margin:auto}
+.hero{padding:70px 0 32px;display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid var(--line);gap:20px}
+.kicker{font:10px ui-monospace,monospace;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+h1,h2,p{margin-top:0}
+h1{font-size:clamp(42px,7vw,84px);letter-spacing:-.075em;line-height:.94;font-weight:650;margin:14px 0 0}
+.hero-note{font-size:12px;line-height:1.7;color:var(--muted);max-width:245px;margin:0 0 3px}
+.library-bar{display:flex;justify-content:space-between;align-items:center;padding:25px 0 0;gap:16px}
+.section-label{font:10px ui-monospace,monospace;letter-spacing:1.3px;color:var(--muted);text-transform:uppercase}
+.album-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:38px 24px;padding:24px 0 70px}
+.album-card{min-width:0;border:0;background:none;color:var(--text);text-align:left;cursor:pointer;padding:0}
+.art{position:relative;overflow:hidden;aspect-ratio:1/1;background:#262820;margin-bottom:15px;isolation:isolate}
+.art:before,.art:after{content:"";position:absolute;inset:0;pointer-events:none}
+.art:before{background:linear-gradient(135deg,transparent 30%,rgba(0,0,0,.56)),radial-gradient(ellipse at 68% 30%,var(--art2),transparent 43%),var(--art1);opacity:.96}
+.art:after{inset:9%;border:1px solid rgba(255,255,255,.26);mix-blend-mode:screen}
+.art .shape{position:absolute;width:72%;aspect-ratio:1;left:14%;top:14%;border:1px solid rgba(255,255,255,.48);border-radius:50%;transform:rotate(-22deg);box-shadow:0 0 0 14px rgba(255,255,255,.035),0 0 0 30px rgba(255,255,255,.025)}
+.art .art-word{position:absolute;left:9%;bottom:9%;font-size:clamp(24px,3.4vw,48px);letter-spacing:-.09em;font-weight:800;line-height:.84;max-width:80%;overflow-wrap:anywhere}
+.art .art-index{position:absolute;right:9%;top:9%;font:9px ui-monospace,monospace;letter-spacing:1px}
+.album-card:hover .art{filter:brightness(1.12)}
+.album-card:hover .album-title{color:var(--acid)}
+.album-title{font-size:14px;line-height:1.4;font-weight:600;transition:color .18s}
+.album-meta{font:10px ui-monospace,monospace;color:var(--muted);margin-top:6px;letter-spacing:.3px}
+.view{display:none}.view.active{display:block}
+.search-head{padding:80px 0 32px;border-bottom:1px solid var(--line)}
+.search-head h1{font-size:clamp(42px,6vw,70px)}
+.search-desc{color:var(--muted);font-size:13px;margin:18px 0 0}
+.search-wrap{display:flex;align-items:center;border:1px solid var(--line);background:var(--surface);margin:30px 0 20px;padding:0 18px;gap:12px}
+.search-wrap span{font:14px ui-monospace,monospace;color:var(--acid)}
+.search-wrap input{height:58px;width:100%;background:transparent;border:0;outline:none;color:var(--text);font-size:14px}
+.search-wrap input::placeholder{color:#74766c}
+.results{padding-bottom:60px}
+.result{display:grid;grid-template-columns:44px 1fr auto;align-items:center;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);color:var(--text);padding:17px 12px;cursor:pointer}
+.result:hover{background:var(--surface)}
+.result-num,.result-meta{font:10px ui-monospace,monospace;color:var(--muted)}
+.result-name{font-size:13px}.result-meta{margin-top:5px}
+.back{margin:28px 0 0;background:none;border:0;color:var(--muted);font-size:12px;cursor:pointer;padding:8px 0}
+.back:hover{color:var(--acid)}
+.release{display:grid;grid-template-columns:minmax(220px,340px) 1fr;gap:clamp(28px,5vw,70px);padding:24px 0 56px;border-bottom:1px solid var(--line);align-items:end}
+.release .art{margin:0;box-shadow:0 18px 45px #0005}
+.release h1{font-size:clamp(42px,7vw,82px);overflow-wrap:anywhere}
+.release-meta{color:var(--muted);font:11px ui-monospace,monospace;letter-spacing:.6px;margin:18px 0 0}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:28px}
+.btn{min-height:40px;padding:0 16px;border:1px solid var(--line);background:transparent;color:var(--text);font-size:12px;cursor:pointer}
+.btn.primary{background:var(--acid);border-color:var(--acid);color:var(--site-on-primary);font-weight:700}
+.btn:hover{border-color:var(--acid)}
+.track-section{padding:38px 0 65px}
+.track-top{display:flex;align-items:end;justify-content:space-between;margin-bottom:20px}
+.track-top h2{font-size:22px;letter-spacing:-.04em;margin:8px 0 0}
+.track-head,.track{display:grid;grid-template-columns:48px minmax(0,1fr) 100px 76px;gap:10px;align-items:center}
+.track-head{padding:0 12px 12px;color:var(--muted);font:9px ui-monospace,monospace;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--line)}
+.track{min-height:58px;border-bottom:1px solid #ffffff0b;padding:0 12px}
+.track:hover{background:var(--surface)}
+.track .num{font:10px ui-monospace,monospace;color:var(--muted)}
+.track .name{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.track .duration{font:10px ui-monospace,monospace;color:var(--muted);text-align:right}
+.track .play-row{border:0;background:none;color:var(--text);cursor:pointer;text-align:left;display:contents}
+.track .small-action{border:1px solid var(--line);background:transparent;color:var(--muted);padding:7px 8px;cursor:pointer;font-size:10px}
+.track .small-action:hover{color:var(--acid);border-color:var(--acid)}
+.track-actions{display:flex;gap:5px;justify-content:flex-end}
+.empty{padding:34px 0;color:var(--muted);font-size:13px}
+footer.site-footer{border-top:1px solid var(--line);padding:24px clamp(20px,5vw,76px);display:flex;justify-content:space-between;gap:20px;color:var(--muted);font-size:11px}
+.legal-links{display:flex;gap:18px}.legal-links button{border:0;background:none;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:11px}
+.player{position:fixed;z-index:10;bottom:0;left:0;right:0;min-height:82px;background:#171813;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,1.2fr) minmax(80px,.5fr);align-items:center;gap:25px;padding:12px clamp(16px,3vw,42px)}
+.now{display:flex;align-items:center;gap:12px;min-width:0}
+.mini-art{width:46px;height:46px;flex-shrink:0;background:var(--surface2);display:grid;place-items:center;color:var(--acid);font:12px ui-monospace,monospace}
+.now-text{min-width:0}.now-title{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.now-artist{font:10px ui-monospace,monospace;color:var(--muted);margin-top:5px}
+.player-center{display:flex;flex-direction:column;gap:8px;min-width:0}
+.controls{display:flex;justify-content:center;align-items:center;gap:16px}
+.control{background:none;border:0;color:var(--muted);cursor:pointer;font-size:17px;padding:2px 5px}
+.control:hover{color:var(--acid)}
+.control.play{background:var(--acid);color:var(--site-on-primary);width:30px;height:30px;font-size:12px}
+.timeline{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;gap:8px;align-items:center;font:9px ui-monospace,monospace;color:var(--muted)}
+input[type=range]{accent-color:var(--acid);width:100%;cursor:pointer}
+.volume{display:flex;gap:12px;align-items:center;justify-content:flex-end;color:var(--muted);font:9px ui-monospace,monospace}
+.volume input{max-width:100px}
+.toast{position:fixed;left:50%;bottom:105px;transform:translateX(-50%);background:var(--acid);color:#111;padding:10px 14px;font-size:12px;display:none;z-index:30}
+.toast.show{display:block}
+dialog{max-width:620px;width:calc(100% - 32px);background:var(--surface);color:var(--text);border:1px solid var(--line);padding:28px}
+dialog::backdrop{background:#000b}
+dialog h2{font-size:28px;letter-spacing:-1px}
+dialog p,dialog li{font-size:13px;line-height:1.7;color:#c2c3b9}
+.dialog-close{float:right;background:none;border:1px solid var(--line);color:var(--text);padding:7px 10px;cursor:pointer}
+@media(max-width:850px){.album-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 18px}.hero{padding-top:54px}.status{display:none}.release{grid-template-columns:minmax(180px,280px) 1fr;gap:28px}.player{grid-template-columns:minmax(0,1fr) minmax(230px,1fr);gap:15px}.volume{display:none}}
+@media(max-width:580px){.topbar{height:64px;padding:0 18px;gap:12px}.brand{font-size:16px}nav{gap:16px}.nav-link{font-size:11px}main{width:calc(100% - 36px)}.hero{padding:52px 0 24px;align-items:start;flex-direction:column;gap:18px}.hero h1{font-size:58px}.hero-note{max-width:340px}.album-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 14px;padding-top:20px}.art .art-word{font-size:clamp(26px,9vw,42px)}.release{grid-template-columns:1fr;gap:25px;padding-top:18px}.release .art{width:min(100%,340px)}.release h1{font-size:56px}.actions{gap:7px}.btn{padding:0 12px}.track-head,.track{grid-template-columns:30px minmax(0,1fr) 55px 54px;gap:5px;padding-left:6px;padding-right:6px}.track .small-action{padding:6px 5px}.track-actions{gap:3px}.track .name{font-size:12px}.player{grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:10px 12px;min-height:76px}.mini-art{width:38px;height:38px}.player-center{gap:4px}.controls{gap:6px}.control{font-size:15px}.timeline{grid-template-columns:27px minmax(0,1fr) 27px;gap:4px}.timeline span{font-size:8px}.now-title{font-size:11px}.now-artist{font-size:9px}footer.site-footer{padding:20px 18px 96px;flex-direction:column;gap:14px}.search-head{padding-top:54px}.search-wrap{margin-top:22px}.result{grid-template-columns:30px 1fr auto;padding:15px 5px}.result-meta{font-size:9px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
 </head>
-
-
 <body>
-
-
-    <!-- =========================
-         TOP NAVIGATION
-    ========================== -->
-
-    <header class="topbar">
-
-        <button
-            class="brand"
-            id="brand-button"
-            type="button"
-        >
-            d4vd.vault
-        </button>
-
-
-        <nav class="top-nav">
-
-            <button
-                class="nav-link active"
-                id="library-button"
-                type="button"
-            >
-                Library
-            </button>
-
-            <button
-                class="nav-link"
-                id="search-button"
-                type="button"
-            >
-                Search
-            </button>
-
-            <a
-                class="nav-link"
-                href="https://discord.gg/v7BTpDGhBC"
-                target="_blank"
-                rel="noopener noreferrer"
-                style="text-decoration: none; display: inline-flex; align-items: center;"
-            >
-                Discord
-            </a>
-
-        </nav>
-
-
-        <div class="top-status">
-
-            <span class="status-dot"></span>
-
-            PRIVATE ARCHIVE
-
-        </div>
-
-    </header>
-
-
-    <!-- =========================
-         MAIN APPLICATION
-    ========================== -->
-
-    <main class="site">
-
-
-        <!-- =========================
-             LIBRARY VIEW
-        ========================== -->
-
-        <section
-            id="library-view"
-            class="view active-view"
-        >
-
-            <div class="page-heading">
-
-                <div>
-
-                    <p class="eyebrow">
-                        d4vd.vault
-                    </p>
-
-                    <h1>
-                        Library
-                    </h1>
-
-                </div>
-
-
-                <p
-                    class="library-total"
-                    id="library-total"
-                >
-                    00 RELEASES
-                </p>
-
-            </div>
-
-
-            <div
-                id="album-grid"
-                class="album-grid"
-            ></div>
-
-
-            <div
-                id="library-empty"
-                class="empty-state"
-            >
-                No releases available.
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             ALBUM VIEW
-        ========================== -->
-
-        <section
-            id="album-view"
-            class="view"
-        >
-
-            <button
-                class="back-button"
-                id="back-to-library"
-                type="button"
-            >
-                ← Library
-            </button>
-
-
-            <section class="release-header">
-
-
-                <div class="cover-wrap">
-
-                    <img
-                        id="album-cover"
-                        class="album-cover"
-                        src=""
-                        alt=""
-                    >
-
-                </div>
-
-
-                <div class="release-info">
-
-                    <p
-                        class="release-type"
-                        id="album-type"
-                    >
-                        EP / ARCHIVE
-                    </p>
-
-
-                    <h1 id="album-title">
-                        —
-                    </h1>
-
-
-                    <p
-                        class="release-meta"
-                        id="album-meta"
-                    >
-                        —
-                    </p>
-
-
-                    <div class="release-actions">
-
-                        <button
-                            class="primary-button"
-                            id="play-album"
-                            type="button"
-                        >
-                            <span>▶</span>
-                            Play
-                        </button>
-
-
-                        <button
-                            class="secondary-button"
-                            id="shuffle-button"
-                            type="button"
-                        >
-                            Shuffle
-                        </button>
-
-
-                        <button
-                            class="secondary-button"
-                            id="download-album"
-                            type="button"
-                        >
-                            ↓ Download
-                        </button>
-
-
-                        <button
-                            class="secondary-button"
-                            id="copy-album-link"
-                            type="button"
-                        >
-                            ⧉ Copy Link
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <section class="track-section">
-
-                <div class="section-heading">
-
-                    <div>
-
-                        <p class="eyebrow">
-                            TRACKLIST
-                        </p>
-
-                        <h2 id="tracklist-title">
-                            —
-                        </h2>
-
-                    </div>
-
-
-                    <p
-                        class="track-count"
-                        id="track-count"
-                    >
-                        00
-                    </p>
-
-                </div>
-
-
-                <div class="track-header">
-
-                    <span>#</span>
-
-                    <span>Title</span>
-
-                    <span>Duration</span>
-
-                </div>
-
-
-                <div
-                    id="track-list"
-                    class="track-list"
-                ></div>
-
-
-                <div
-                    id="album-empty"
-                    class="empty-state"
-                >
-                    No tracks available.
-                </div>
-
-            </section>
-
-        </section>
-
-
-        <!-- =========================
-             SEARCH VIEW
-        ========================== -->
-
-        <section
-            id="search-view"
-            class="view"
-        >
-
-            <div class="search-page-heading">
-
-                <p class="eyebrow">
-                    ARCHIVE SEARCH
-                </p>
-
-                <h1>
-                    Search the vault.
-                </h1>
-
-                <p class="search-description">
-                    Search across every release and track.
-                </p>
-
-            </div>
-
-
-            <div class="search-box">
-
-                <span class="search-symbol">
-                    /
-                </span>
-
-
-                <input
-                    id="search-input"
-                    type="search"
-                    placeholder="Search tracks or releases..."
-                    autocomplete="off"
-                >
-
-
-                <button
-                    id="clear-search"
-                    class="clear-search"
-                    type="button"
-                    aria-label="Clear search"
-                >
-                    ×
-                </button>
-
-            </div>
-
-
-            <div
-                id="search-results"
-                class="search-results"
-            ></div>
-
-
-            <div
-                id="search-empty"
-                class="empty-state"
-            >
-                No results found.
-            </div>
-
-        </section>
-
-
-    </main>
-
-
-    <!-- =========================
-         BOTTOM PLAYER
-    ========================== -->
-
-    <footer class="player">
-
-        <div class="player-track">
-
-            <img
-                id="player-cover"
-                class="player-cover"
-                src=""
-                alt=""
-            >
-
-
-            <div class="player-track-info">
-
-                <span
-                    id="now-title"
-                    class="player-title"
-                >
-                    Select a track
-                </span>
-
-
-                <span
-                    id="now-artist"
-                    class="player-artist"
-                >
-                    d4vd
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div class="player-center">
-
-            <div class="player-buttons">
-
-                <button
-                    id="previous-button"
-                    class="player-button"
-                    type="button"
-                    aria-label="Previous track"
-                >
-                    ‹‹
-                </button>
-
-
-                <button
-                    id="play-button"
-                    class="play-button"
-                    type="button"
-                    aria-label="Play"
-                >
-                    ▶
-                </button>
-
-
-                <button
-                    id="next-button"
-                    class="player-button"
-                    type="button"
-                    aria-label="Next track"
-                >
-                    ››
-                </button>
-
-            </div>
-
-
-            <div class="timeline">
-
-                <span id="current-time">
-                    0:00
-                </span>
-
-
-                <input
-                    id="progress"
-                    class="progress"
-                    type="range"
-                    min="0"
-                    max="100"
-                    value="0"
-                    step="0.1"
-                    aria-label="Track progress"
-                >
-
-
-                <span id="total-time">
-                    0:00
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div class="player-volume">
-
-            <span>
-                VOL
-            </span>
-
-
-            <input
-                id="volume"
-                class="volume"
-                type="range"
-                min="0"
-                max="1"
-                value="1"
-                step="0.01"
-                aria-label="Volume"
-            >
-
-        </div>
-
-    </footer>
-
-
-    <!-- AUDIO -->
-
-    <audio
-        id="audio"
-        preload="metadata"
-    ></audio>
-
-
-    <!-- ZIP LIBRARY -->
-
-    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-
-
-    <!-- YOUR DATA -->
-
-    <script src="albums.js"></script>
-
-
-    <!-- SITE LOGIC -->
-
-    <script src="app.js"></script>
-
-
-</body>
-
-</html>
+<div id="app">
+<header class="topbar">
+<button class="brand" id="homeBtn" aria-label="Go to library">d4vd<span>.</span>vault</button>
+<nav aria-label="Main navigation"><button class="nav-link active" data-view="library">Library</button><button class="nav-link" data-view="search">Search</button><a class="nav-link" href="https://discord.gg/v7BTpDGhBC" target="_blank" rel="noopener noreferrer">Discord ↗</a></nav>
+<div class="status">FAN ARCHIVE</div>
+</header>
+<main>
+<section class="view active" id="library">
+<div class="hero"><div><div class="kicker">A listening archive / d4vd</div><h1>In the vault<span style="color:var(--acid)">.</span></h1></div><p class="hero-note">A quiet place to browse the releases and tracks collected here.</p></div>
+<div class="library-bar"><span class="section-label">The collection</span><span class="section-label" id="releaseCount">08 releases</span></div>
+<div class="album-grid" id="albumGrid"></div>
+</section>
+<section class="view" id="albumView">
+<button class="back" id="backBtn">← Back to library</button>
+<div class="release" id="releaseHeader"></div>
+<section class="track-section"><div class="track-top"><div><div class="kicker">Tracklist / archive</div><h2 id="trackHeading">Tracks</h2></div><span class="section-label" id="trackCount"></span></div>
+<div class="track-head"><span>#</span><span>Track title</span><span style="text-align:right">Length</span><span></span></div><div id="trackList"></div></section>
+</section>
+<section class="view" id="search">
+<div class="search-head"><div class="kicker">Find something</div><h1>Search the vault<span style="color:var(--acid)">.</span></h1><p class="search-desc">Look across release titles and track names.</p></div>
+<label class="search-wrap"><span>/</span><input id="searchInput" type="search" placeholder="Search tracks or releases…" autocomplete="off" aria-label="Search releases and tracks"></label>
+<div class="results" id="searchResults"></div>
+</section>
+</main>
+<footer class="site-footer"><span>Unofficial fan-made archive. Not affiliated with d4vd.</span><div class="legal-links"><button data-legal="privacy">Privacy</button><button data-legal="terms">Terms</button></div></footer>
+<div class="player" aria-label="Audio player">
+<div class="now"><div class="mini-art" id="miniArt">d.</div><div class="now-text"><div class="now-title" id="nowTitle">Select a track</div><div class="now-artist" id="nowArtist">d4vd · archive</div></div></div>
+<div class="player-center"><div class="controls"><button class="control" id="prevBtn" aria-label="Previous track">|‹</button><button class="control play" id="playBtn" aria-label="Play or pause">▶</button><button class="control" id="nextBtn" aria-label="Next track">›|</button></div><div class="timeline"><span id="elapsed">0:00</span><input id="progress" type="range" min="0" max="100" value="0" step=".1" aria-label="Track progress"><span id="duration">0:00</span></div></div>
+<div class="volume"><label for="volume">VOL</label><input id="volume" type="range" min="0" max="1" value=".8" step=".01" aria-label="Volume"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<dialog id="legalDialog"><button class="dialog-close" id="closeDialog">Close</button><div id="legalContent"></div></dialog>
+<audio id="audio" preload="metadata"></audio>
+</div>
+<script src="./albums.js"></script>
+<script>
+const R2 = "https://pub-d9bd233ceeaa46968d21cdfda84af3d9.r2.dev";
+const palettes = [
+ ["#252923","#b7c99c"],["#302b26","#d0b58d"],["#28343a","#a3c4cc"],["#36302c","#d5a89a"],
+ ["#2f3026","#d0cf91"],["#292d39","#a6b3d9"],["#30292e","#d19ca9"],["#26342e","#a1c6a7"]
+];
+const $ = s => document.querySelector(s);
+let activeAlbum = 0, activeTrack = -1, previousView = "library";
+const audio = $("#audio");
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function trackName(f){return f.replace(/\.[^/.]+$/,"").replace(/^\d+-/,"").replace(/-/g," ").replace(/\b\w/g,c=>c.toUpperCase());}
+function coverMarkup(album,i,large=false){const p=palettes[i%palettes.length];return `<div class="art" style="--art1:${p[0]};--art2:${p[1]}" aria-label="${safe(album.name)} abstract artwork"><span class="shape"></span><span class="art-index">${String(i+1).padStart(2,"0")} / D4</span><span class="art-word">${safe(album.name.toUpperCase())}</span></div>`;}
+function showView(name){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===(name==="album"?"albumView":name)));document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===name));if(name!=="album")history.replaceState({}, "", name==="library"?location.pathname:("#"+name));window.scrollTo({top:0,behavior:"instant"});}
+function renderLibrary(){ $("#releaseCount").textContent=String(albums.length).padStart(2,"0")+" releases";$("#albumGrid").innerHTML=albums.map((a,i)=>`<button class="album-card" data-album="${i}" aria-label="Open ${safe(a.name)}">${coverMarkup(a,i)}<div class="album-title">${safe(a.name)}</div><div class="album-meta">${safe(a.type)} · ${a.tracks.length} ${a.tracks.length===1?"track":"tracks"}</div></button>`).join("");}
+function openAlbum(i){activeAlbum=i;const a=albums[i];if(!a)return;showView("album");$("#releaseHeader").innerHTML=`${coverMarkup(a,i)}<div><div class="kicker">${safe(a.type)} / archive entry ${String(i+1).padStart(2,"0")}</div><h1>${safe(a.name)}</h1><p class="release-meta">${a.tracks.length} ${a.tracks.length===1?"TRACK":"TRACKS"} · D4VD ARCHIVE</p><div class="actions"><button class="btn primary" id="playAlbum">▶ &nbsp; Play release</button><button class="btn" id="shuffleAlbum">Shuffle</button><button class="btn" id="copyAlbum">Copy link</button></div></div>`;$("#trackHeading").textContent=a.name;$("#trackCount").textContent=String(a.tracks.length).padStart(2,"0");$("#trackList").innerHTML=a.tracks.map((f,j)=>`<div class="track"><button class="play-row" data-track="${j}" aria-label="Play ${safe(trackName(f))}"><span class="num">${String(j+1).padStart(2,"0")}</span><span class="name">${safe(trackName(f))}</span><span class="duration" id="dur-${j}">--:--</span></button><span class="track-actions"><button class="small-action" data-copy="${j}" title="Copy track link" aria-label="Copy track link">↗</button><button class="small-action" data-download="${j}" title="Download track" aria-label="Download track">↓</button></span></div>`).join("");const u=new URL(location.href);u.hash="";u.searchParams.set("album",a.folder);history.replaceState({}, "",u);$("#playAlbum").onclick=()=>playAt(0);$("#shuffleAlbum").onclick=()=>playAt(Math.floor(Math.random()*a.tracks.length));$("#copyAlbum").onclick=()=>copyLink(albumUrl(i));a.tracks.forEach((f,j)=>{const probe=new Audio();probe.preload="metadata";probe.src=trackUrl(i,j);probe.addEventListener("loadedmetadata",()=>{const el=$("#dur-"+j);if(el)el.textContent=fmt(probe.duration);},{once:true});});}
+function albumUrl(i){const u=new URL(location.href);u.hash="";u.search="";u.searchParams.set("album",albums[i].folder);return u.href;}
+function trackUrl(i,j){return `${R2}/${encodeURIComponent(albums[i].folder)}/${encodeURIComponent(albums[i].tracks[j])}`;}
+function playAt(j){const a=albums[activeAlbum];if(!a?.tracks[j])return;activeTrack=j;audio.src=trackUrl(activeAlbum,j);audio.load();$("#nowTitle").textContent=trackName(a.tracks[j]);$("#miniArt").textContent=String(a.name).slice(0,2).toUpperCase();$("#playBtn").textContent="Ⅱ";$("#playBtn").setAttribute("aria-label","Pause");audio.play().then(()=>{updateRows();}).catch(()=>{ $("#playBtn").textContent="▶";$("#playBtn").setAttribute("aria-label","Play");toast("Playback could not start. Check the audio source or connection.");updateRows();});const u=new URL(location.href);u.hash="";u.searchParams.set("album",a.folder);u.searchParams.set("track",a.tracks[j]);history.replaceState({}, "", u);$("#elapsed").textContent="0:00";$("#duration").textContent="0:00";updateRows();}
+function updateRows(){document.querySelectorAll(".track").forEach((r,i)=>r.style.background=(activeAlbum===activeAlbum&&i===activeTrack&&$("#albumView").classList.contains("active"))?"#c9ff5510":"");}
+function fmt(s){if(!Number.isFinite(s))return"0:00";return Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");}
+function next(delta){const a=albums[activeAlbum];if(!a?.tracks.length)return;playAt((Math.max(activeTrack,0)+delta+a.tracks.length)%a.tracks.length);}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2200);}
+async function copyLink(url){try{await navigator.clipboard.writeText(url);toast("Link copied");}catch(e){toast(url);}}
+function download(i,j){const a=document.createElement("a");a.href=trackUrl(i,j);a.download=albums[i].tracks[j];a.rel="noopener";a.click();}
+function renderSearch(){const q=$("#searchInput").value.trim().toLowerCase();const rows=[];albums.forEach((a,i)=>{if(a.name.toLowerCase().includes(q)&&q)rows.push({i,j:-1,name:a.name,meta:`${a.type} · ${a.tracks.length} tracks`});a.tracks.forEach((f,j)=>{const n=trackName(f);if(q&&(n.toLowerCase().includes(q)||a.name.toLowerCase().includes(q)))rows.push({i,j,name:n,meta:a.name});});});$("#searchResults").innerHTML=q?(rows.length?rows.map((r,k)=>`<button class="result" data-result-album="${r.i}" data-result-track="${r.j}"><span class="result-num">${String(k+1).padStart(2,"0")}</span><span><span class="result-name">${safe(r.name)}</span><span class="result-meta" style="display:block">${safe(r.meta)}</span></span><span class="result-meta">${r.j<0?"RELEASE":"TRACK"} ↗</span></button>`).join(""):`<div class="empty">No matches. Try another title.</div>`):`<div class="empty">Start typing to search ${albums.length} releases and their tracks.</div>`;}
+document.addEventListener("click",e=>{const card=e.target.closest("[data-album]");if(card){openAlbum(+card.dataset.album);return;}const tr=e.target.closest("[data-track]");if(tr){playAt(+tr.dataset.track);return;}const result=e.target.closest("[data-result-album]");if(result){const i=+result.dataset.resultAlbum,j=+result.dataset.resultTrack;openAlbum(i);if(j>=0)playAt(j);return;}const cp=e.target.closest("[data-copy]");if(cp){copyLink(new URL(trackUrl(activeAlbum,+cp.dataset.copy),location.href).href);return;}const dl=e.target.closest("[data-download]");if(dl){download(activeAlbum,+dl.dataset.download);return;}});
+document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
+$("#homeBtn").onclick=()=>showView("library");$("#backBtn").onclick=()=>showView("library");$("#searchInput").addEventListener("input",renderSearch);
+$("#playBtn").onclick=()=>{if(!audio.src){playAt(0);return;}if(audio.paused){audio.play().then(()=>$("#playBtn").textContent="Ⅱ").catch(()=>toast("Playback could not start. Check the audio source or connection."));}else audio.pause();};
+audio.addEventListener("play",()=>{$("#playBtn").textContent="Ⅱ";});audio.addEventListener("pause",()=>{$("#playBtn").textContent="▶";});audio.addEventListener("timeupdate",()=>{if(audio.duration){$("#progress").value=audio.currentTime/audio.duration*100;$("#elapsed").textContent=fmt(audio.currentTime);$("#duration").textContent=fmt(audio.duration);}});audio.addEventListener("ended",()=>next(1));audio.addEventListener("error",()=>{if(audio.src)toast("Audio file unavailable in this preview or source.");});
+$("#prevBtn").onclick=()=>next(-1);$("#nextBtn").onclick=()=>next(1);$("#progress").oninput=()=>{if(audio.duration)audio.currentTime=audio.duration*$("#progress").value/100;};$("#volume").oninput=()=>audio.volume=+$("#volume").value;
+document.querySelectorAll("[data-legal]").forEach(b=>b.onclick=()=>{const privacy=b.dataset.legal==="privacy";$("#legalContent").innerHTML=privacy?`<h2>Privacy</h2><p>This fan-made preview does not provide accounts or a first-party contact form. Search runs locally in your browser. Playback and downloads request media from the configured archive host; that host may receive standard connection data. Clipboard actions only run when you choose to copy a link.</p><p>This preview does not intentionally store search history or create user profiles. Hosting and analytics behavior may differ after deployment, so review the final hosting provider's privacy terms before launch.</p>`:`<h2>Terms</h2><p>This is an unofficial fan-made archive and is not affiliated with or endorsed by d4vd. Release names and track listings are shown for browsing. Audio and artwork availability depends on the configured remote archive.</p><p>Use the site only where you have the right to access or download the material. No warranty is made that remote media will remain available. Replace this provisional notice with terms reviewed for your actual deployment and jurisdiction.</p>`;$("#legalDialog").showModal();});
+$("#closeDialog").onclick=()=>$("#legalDialog").close();$("#legalDialog").addEventListener("click",e=>{if(e.target===$("#legalDialog"))$("#legalDialog").close();});
+renderLibrary();renderSearch();
+const params=new URLSearchParams(location.search);const initial=albums.findIndex(a=>a.folder===params.get("album"));if(initial>=0){openAlbum(initial);const ti=albums[initial].tracks.indexOf(params.get("track"));if(ti>=0){activeAlbum=initial;playAt(ti);audio.pause();}}
+</script>
+</body></html>
